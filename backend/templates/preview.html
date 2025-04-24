@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Preview</title>
+    <style>
+        .table { border-collapse: collapse; width: 100%; }
+        .table th, .table td { border: 1px solid #ddd; padding: 8px; }
+        .table th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h2>Preview of Uploaded File</h2>
+    {{ table|safe }}
+    <a href="/">Upload another file</a>
+</body>
+</html>
