@@ -1,8 +1,14 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
 import pandas as pd
 from flask import Flask, render_template, request
 from io import BytesIO
+from backend.data_preprocessing.data_utils import handle_missing_values, normalize_column_names
+from backend.data_preprocessing.summary_utils import generate_overview
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'backend', 'templates'))
 
 @app.route('/')
 def index():
@@ -25,9 +31,14 @@ def upload():
     except Exception as e:
         return f"Error reading file: {str(e)}"
 
-    # Convert to HTML table
+    # Preprocessing steps
+    df = handle_missing_values(df)
+    df = normalize_column_names(df)
+    overview = generate_overview(df)
+
+    # Render table and overview
     preview = df.head().to_html(classes='table table-striped')
-    return render_template('preview.html', table=preview)
+    return render_template('preview.html', table=preview, overview=overview)
 
 if __name__ == '__main__':
     app.run(debug=True)

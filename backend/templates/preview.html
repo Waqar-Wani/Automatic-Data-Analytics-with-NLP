@@ -3,14 +3,29 @@
 <head>
     <title>Preview</title>
     <style>
-        .table { border-collapse: collapse; width: 100%; }
+        .table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
         .table th, .table td { border: 1px solid #ddd; padding: 8px; }
         .table th { background-color: #f2f2f2; }
+        .overview { margin-bottom: 20px; }
+        .overview h3 { margin-bottom: 10px; }
+        .overview ul { list-style-type: none; padding: 0; }
+        .overview li { margin-bottom: 5px; }
     </style>
 </head>
 <body>
     <h2>Preview of Uploaded File</h2>
+
+    <div class="overview">
+        <h3>Dataset Overview</h3>
+        <ul>
+            {% for key, value in overview.items() %}
+                <li><strong>{{ key }}:</strong> {{ value }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
     {{ table|safe }}
+    <br>
     <a href="/">Upload another file</a>
 </body>
 </html>
