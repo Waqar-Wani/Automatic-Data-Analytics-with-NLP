@@ -6,6 +6,10 @@ def handle_missing_values(df):
     # Simple handling: drop rows with any NaNs
     return df.dropna()
 
+def clean_column_name(name):
+    # Function for cleaning column names
+    return name.replace('_', ' ').title().replace(' ', '')
+
 def normalize_column_names(df):
     # Step 1: Convert all column names to lowercase
     df.columns = df.columns.str.lower()
