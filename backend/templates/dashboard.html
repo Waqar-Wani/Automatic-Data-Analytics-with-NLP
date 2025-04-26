@@ -16,33 +16,10 @@
         <h2>Generated Chart: {{ y_column }} by {{ x_column }}</h2>
 
         <!-- Plotly Chart -->
-        <div id="chart"></div>
+        <div id="chart">{{ graph_html | safe }}</div>
 
         <a href="/" class="btn btn-primary mt-4">Back to Homepage</a>
     </div>
-
-    <script>
-        // Using Plotly to render the chart with the data passed from Flask
-        var data = [{
-            x: {{ x_data|tojson }},
-            y: {{ y_data|tojson }},
-            type: 'bar',
-            name: '{{ y_column }} by {{ x_column }}'
-        }];
-        
-        var layout = {
-            title: '{{ y_column }} by {{ x_column }}',
-            xaxis: {
-                title: '{{ x_column }}'
-            },
-            yaxis: {
-                title: '{{ y_column }}'
-            }
-        };
-
-        // Render chart using Plotly.js
-        Plotly.newPlot('chart', data, layout);
-    </script>
 
 </body>
 </html>
