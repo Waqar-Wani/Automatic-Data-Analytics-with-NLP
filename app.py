@@ -73,9 +73,19 @@ def dashboard():
         # Debugging the received data
         print(f"Received data - temp_path: {temp_id}, x_column: {x_column}, y_column: {y_column}")
 
+        if not all([x_column, y_column, temp_id]):
+            return "Missing required parameters. Please select both X and Y columns."
+
         df = cache.get(temp_id)
         if df is None:
             return "Session expired or dataset not found."
+
+        # Validate that columns exist in the dataframe
+        if x_column not in df.columns or y_column not in df.columns:
+            return f"Selected columns not found in dataset. Available columns: {', '.join(df.columns)}"
+
+        # Handle any NaN/undefined values in the selected columns
+        df = df.dropna(subset=[x_column, y_column])
 
         # Further processing for chart generation
         fig = px.bar(df, x=x_column, y=y_column, title=f'Bar Chart: {x_column} by {y_column}')
