@@ -15,7 +15,7 @@ from backend.data_preprocessing.data_cleaning import handle_missing_values, norm
 from backend.data_preprocessing.data_overview import generate_overview
 
 # Initialize Flask app
-app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'backend', 'templates'))
+app = Flask(__name__, static_folder=os.path.join('backend', 'static'), template_folder=os.path.join('backend', 'templates'))
 
 # In-memory cache (for temporary session-like storage)
 cache = {}
