@@ -104,6 +104,10 @@ def extract_code_from_response(response):
 def index():
     return render_template('index.html')
 
+@app.route('/upload', methods=['GET'])
+def upload_form():
+    return render_template('upload.html')
+
 @app.route('/upload', methods=['POST'])
 def upload():
     file = request.files['file']
@@ -284,6 +288,10 @@ def chatbot_test_api():
     except Exception as e:
         html = f"Error: {e}"
     return jsonify({'html': html})
+
+@app.route('/data-source')
+def data_source():
+    return render_template('data_source.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DataPulse Analytics{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/common.css">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <div class="logo"><i class="fas fa-database"></i> AI-Powered Data Analytics</div>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/data-source">Data Source</a>
+            <a href="/upload">Upload</a>
+            <a href="#">Visualize</a>
+            <a href="#">Chatbot</a>
+            <a href="#">About</a>
+        </nav>
+    </header>
+    {% block content %}{% endblock %}
+    <footer>
+        Project Team: Waqar Maqbool Wani & Inshpreet Kour Mehta | Guided by AI
+    </footer>
+</body>
+</html> 

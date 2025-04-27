@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Select Data Source | DataPulse Analytics{% endblock %}
+{% block content %}
+<div class="container">
+    <h1><i class="fas fa-database"></i> Select Data Source</h1>
+    <p>Choose how you want to start your data analysis journey. Upload your own dataset or connect to a live data source!</p>
+    <div class="option-cards">
+        <div class="option-card" onclick="window.location.href='/upload'">
+            <div class="icon"><i class="fas fa-upload"></i></div>
+            <h2>Analyze Uploaded Dataset</h2>
+            <p>Upload CSV, Excel, or JSON files for instant, AI-powered analysis and visualization.</p>
+            <div class="arrow"><i class="fas fa-arrow-right"></i></div>
+        </div>
+        <div class="option-card" onclick="window.location.href='/live-data'">
+            <div class="icon"><i class="fas fa-broadcast-tower"></i></div>
+            <h2>Analyze Live Data (URL)</h2>
+            <p>Connect to a live API or data feed and analyze real-time data with powerful tools.</p>
+            <div class="arrow"><i class="fas fa-arrow-right"></i></div>
+        </div>
+    </div>
+    <div class="interactive-tip">
+        <i class="fas fa-lightbulb"></i>
+        <span>Tip: You can always return to the homepage or switch data sources using the navigation bar above!</span>
+    </div>
+</div>
+{% endblock %} 
