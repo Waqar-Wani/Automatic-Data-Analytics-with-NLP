@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}About Project | DataPulse Analytics{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/static/css/about_project.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="about-main-container">
+    <!-- Header Section -->
+    <div class="about-header-card">
+        <h1>AI-Powered Data Analytics Platform with NLP Chatbot</h1>
+        <div class="about-meta">
+            <img src="{{ url_for('static', filename='images/NIELIT_Logo.jpg') }}" alt="NIELIT College Logo" class="college-logo">
+            <div class="college-logo-caption"></div>
+            <p class="institution">National Institute of Electronics & Information Technology (NIELIT), Srinagar</p>
+            <p>Prepared by: <b>Waqar Maqbool Wani</b> (23045136010) & <b>Inshpreet Kour Mehta</b> (23045136011)</p>
+        </div>
+    </div>
+    <!-- Introduction Section -->
+    <section class="about-section-card">
+        <h2><i class="fas fa-lightbulb icon"></i> Introduction</h2>
+        <img class="about-section-img" src="{{ url_for('static', filename='images/intro.jpg') }}" alt="Data Analysis">
+        <p>The proposed project provides users with a seamless and intuitive way to analyze datasets and extract meaningful insights through natural language interaction. Users can upload datasets in various formats (e.g., CSV, Excel, JSON), and the system automatically generates descriptive statistics, visualizations, and actionable insights. It integrates an NLP chatbot powered by APIs such as ChatGPT, DeepSeek, or similar, allowing users to interact with their data through plain English queries, with the chatbot responding with relevant summaries, charts, or dashboards.</p>
+    </section>
+    <!-- Key Features Section -->
+    <section class="about-section-card">
+        <h2><i class="fas fa-star icon"></i> Key Features</h2>
+        <img class="about-section-img" src="{{ url_for('static', filename='images/features.png') }}" alt="Features">
+        <ul class="about-features-list">
+            <li><i class="fas fa-upload icon"></i> Data Upload & Processing (CSV, Excel, JSON formats).</li>
+            <li><i class="fas fa-chart-bar icon"></i> Automated Analysis: Summary statistics, visualizations, pattern and anomaly detection.</li>
+            <li><i class="fas fa-comments icon"></i> NLP Chatbot: Natural language queries via AI APIs like ChatGPT, DeepSeek.</li>
+            <li><i class="fas fa-tachometer-alt icon"></i> Interactive Dashboard: Real-time filtering, sorting, export options using Plotly Dash or Streamlit.</li>
+        </ul>
+    </section>
+    <!-- Use Cases Section -->
+    <section class="about-section-card">
+        <h2><i class="fas fa-briefcase-medical icon"></i> Use Cases</h2>
+        <ul>
+            <li><b>Healthcare:</b> Analyze patient data to detect disease trends and predict risks.</li>
+            <li><b>Education:</b> Monitor student performance and identify at-risk learners.</li>
+            <li><b>Business:</b> Visualize sales data, customer demographics, and manage inventory efficiently.</li>
+        </ul>
+    </section>
+    <!-- Problem Formulation Section -->
+    <section class="about-section-card">
+        <h2><i class="fas fa-exclamation-triangle icon"></i> Problem Formulation</h2>
+        <p>Organizations generate vast amounts of data, but non-technical users find it difficult to derive insights due to the technical barrier. Traditional tools like Tableau and Power BI lack natural language interaction. General-purpose AI models are not secure for sensitive data processing.</p>
+    </section>
+    <!-- Proposed Solution Section -->
+    <section class="about-section-card">
+        <h2><i class="fas fa-cogs icon"></i> Proposed Solution</h2>
+        <ul>
+            <li>Automated Data Analysis</li>
+            <li>NLP Chatbot Integration</li>
+            <li>Secure Local Deployment for Privacy</li>
+        </ul>
+    </section>
+    <!-- Objectives Section -->
+    <section class="about-section-card">
+        <h2><i class="fas fa-bullseye icon"></i> Objectives</h2>
+        <ul>
+            <li>Enable Seamless Data Upload and Processing</li>
+            <li>Provide Automated Insights and Visualizations</li>
+            <li>Integrate NLP-Based Querying Capabilities</li>
+            <li>Ensure Data Privacy and Security</li>
+            <li>Support Domain-Specific Use Cases</li>
+            <li>Promote Scalability and Flexibility</li>
+        </ul>
+    </section>
+    <!-- Methodology Section -->
+    <section class="about-section-card">
+        <h2><i class="fas fa-project-diagram icon"></i> Methodology/Planning of Work</h2>
+        <img class="about-section-img" src="{{ url_for('static', filename='images/methodology.jpg') }}" alt="Architecture Diagram">
+        <ul>
+            <li><b>Frontend:</b> React.js or Streamlit - File upload, dashboards, chatbot UI</li>
+            <li><b>Backend:</b> Flask or Django - API handling, authentication</li>
+            <li><b>Data Processing:</b> Pandas, PySpark - Cleaning, preprocessing</li>
+            <li><b>Analytics Engine:</b> Plotly, Seaborn - Visualizations, anomaly detection</li>
+            <li><b>NLP Chatbot:</b> ChatGPT, DeepSeek - Query interpretation</li>
+            <li><b>Database:</b> SQLite, PostgreSQL, MongoDB - Storage and backup</li>
+        </ul>
+    </section>
+</div>
+{% endblock %}

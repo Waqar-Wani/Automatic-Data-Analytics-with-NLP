@@ -1,214 +1,106 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-Powered Data Analytics Platform</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(120deg, #f0f8ff, #e0ffff);
-            color: #333;
-            overflow-x: hidden;
-        }
-        header {
-            background: #111;
-            color: #00f0ff;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        nav a {
-            color: #00f0ff;
-            margin: 0 15px;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        nav a:hover {
-            color: #ff69b4;
-        }
-        .hero {
-            text-align: center;
-            padding: 100px 20px 60px 20px;
-            color: #fff;
-        }
-        .hero h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: #fff;
-        }
-        .hero p {
-            font-size: 20px;
-            margin-bottom: 30px;
-            color: #e0ffff;
-        }
-        .hero button {
-            padding: 15px 30px;
-            font-size: 18px;
-            border: none;
-            background: #00f0ff;
-            color: #111;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .hero button:hover {
-            background: #ff69b4;
-            color: white;
-        }
-        .upload-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        .upload-modal.active {
-            display: flex;
-        }
-        .upload-box {
-            background: #fff;
-            padding: 40px 30px 30px 30px;
-            border-radius: 18px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-            min-width: 320px;
-            max-width: 95vw;
-            text-align: center;
-            position: relative;
-        }
-        .upload-box h2 {
-            margin-bottom: 20px;
-            color: #00bcd4;
-        }
-        .upload-box label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-        .upload-box input[type=file] {
-            margin-bottom: 20px;
-        }
-        .upload-box button[type=submit] {
-            background: #00f0ff;
-            color: #111;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 30px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .upload-box button[type=submit]:hover {
-            background: #ff69b4;
-            color: #fff;
-        }
-        .close-modal {
-            position: absolute;
-            top: 12px;
-            right: 18px;
-            font-size: 22px;
-            color: #888;
-            cursor: pointer;
-        }
-        .features {
-            display: flex;
-            justify-content: space-around;
-            margin: 60px 20px;
-            flex-wrap: wrap;
-        }
-        .feature-card {
-            background: white;
-            padding: 30px;
-            margin: 15px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            flex: 1 1 250px;
-            transition: transform 0.3s;
-            text-align: center;
-        }
-        .feature-card:hover {
-            transform: translateY(-10px);
-        }
-        footer {
-            background: #111;
-            color: white;
-            text-align: center;
-            padding: 20px;
-            font-size: 14px;
-        }
-        .cursor {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #00f0ff;
-            border-radius: 50%;
-            pointer-events: none;
-            transition: transform 0.1s ease;
-        }
-        @media (max-width: 900px) {
-            .features { flex-direction: column; align-items: center; }
-        }
-    </style>
-</head>
-<body>
-
-<div class="cursor" id="cursor"></div>
-
-<header>
-    <div class="logo">AI Data Analytics</div>
-    <nav>
-        <a href="#">Home</a>
-        <a href="#upload">Upload</a>
-        <a href="#visualize">Visualize</a>
-        <a href="#chatbot">Chatbot</a>
-        <a href="#about">About</a>
-    </nav>
-</header>
-
-<section class="hero" style="background: linear-gradient(rgba(10,20,40,0.7), rgba(10,20,40,0.7)), url('{{ url_for('static', filename='images/dashboard-bg.jpg') }}') center center / cover no-repeat; color: #fff;">
+{% extends "base.html" %}
+{% block title %}Home | DataPulse Analytics{% endblock %}
+{% block content %}
+<style>
+.hero {
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(rgba(10,20,40,0.7), rgba(10,20,40,0.7)), url('{{ url_for('static', filename='images/dashboard-bg.jpg') }}') center center / cover no-repeat;
+    color: #fff;
+    border-radius: 0 0 32px 32px;
+    margin-bottom: 40px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+}
+.hero h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #00f0ff;
+    letter-spacing: 1px;
+}
+.hero p {
+    font-size: 1.3rem;
+    margin-bottom: 32px;
+    color: #e0ffff;
+}
+.hero .cta-btn {
+    padding: 16px 38px;
+    font-size: 1.2rem;
+    border: none;
+    background: #00f0ff;
+    color: #111;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 700;
+    box-shadow: 0 2px 12px rgba(0,240,255,0.12);
+    transition: background 0.3s, color 0.3s;
+}
+.hero .cta-btn:hover {
+    background: #ff69b4;
+    color: #fff;
+}
+.features {
+    display: flex;
+    justify-content: space-around;
+    margin: 60px 20px;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+.feature-card {
+    background: #fff;
+    color: #23272f;
+    padding: 36px 28px;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(0,240,255,0.08);
+    flex: 1 1 250px;
+    min-width: 260px;
+    max-width: 340px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-align: center;
+    margin: 10px 0;
+}
+.feature-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 10px 32px rgba(0,240,255,0.18);
+}
+.feature-card h2 {
+    font-size: 1.4rem;
+    color: #00bcd4;
+    margin-bottom: 14px;
+    font-weight: 700;
+}
+.feature-card p {
+    color: #555;
+    font-size: 1.08rem;
+}
+@media (max-width: 900px) {
+    .features { flex-direction: column; align-items: center; }
+    .feature-card { min-width: 220px; max-width: 95vw; }
+}
+</style>
+<section class="hero">
     <h1>Analyze Data Instantly</h1>
-    <p>Upload your datasets, visualize trends, and interact with your data using AI-powered chatbot.</p>
-    <button id="openUpload">Get Started</button>
+    <p>Upload your datasets, visualize trends, and interact with your data using our AI-powered analytics platform.</p>
+    <button class="cta-btn" onclick="window.location.href='/data-source'">Get Started</button>
 </section>
-
-<!-- Upload Modal -->
-<div class="upload-modal" id="uploadModal">
-    <div class="upload-box">
-        <span class="close-modal" id="closeUpload">&times;</span>
-        <h2>Upload Your Data File</h2>
-        <form action="/upload" method="POST" enctype="multipart/form-data">
-            <label for="file">Choose File (CSV, Excel, JSON):</label>
-            <input type="file" id="file" name="file" required>
-            <br>
-            <button type="submit">Upload & Analyze</button>
-        </form>
-    </div>
-</div>
-
 <section class="features">
     <div class="feature-card">
         <h2>Smart Upload</h2>
-        <p>Seamlessly upload CSV, Excel, and JSON files for instant processing.</p>
+        <p>Seamlessly upload CSV, Excel, and JSON files for instant processing and analysis.</p>
     </div>
     <div class="feature-card">
         <h2>Interactive Visuals</h2>
-        <p>Generate and customize stunning graphs and charts in seconds.</p>
+        <p>Generate and customize stunning graphs and charts in seconds with intuitive controls.</p>
     </div>
     <div class="feature-card">
         <h2>NLP Chatbot</h2>
-        <p>Ask data-related queries in simple English and get instant answers!</p>
+        <p>Ask data-related queries in simple English and get instant, AI-powered answers!</p>
     </div>
 </section>
-
-<footer>
-    <p>Project Team: Waqar Maqbool Wani, Inshpreet Kour Mehta | Guided by AI</p>
-</footer>
-
 <script>
     // Animated cursor
     const cursor = document.getElementById('cursor');
@@ -224,18 +116,5 @@
             cursor.style.transform = 'scale(1)';
         });
     });
-    // Upload modal logic
-    const openUpload = document.getElementById('openUpload');
-    const uploadModal = document.getElementById('uploadModal');
-    const closeUpload = document.getElementById('closeUpload');
-    openUpload.onclick = () => uploadModal.classList.add('active');
-    closeUpload.onclick = () => uploadModal.classList.remove('active');
-    window.onclick = function(event) {
-        if (event.target === uploadModal) {
-            uploadModal.classList.remove('active');
-        }
-    };
 </script>
-
-</body>
-</html>
+{% endblock %}
