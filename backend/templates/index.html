@@ -1,21 +1,120 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Data File</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container mt-5">
-        <h2>Upload Data File</h2>
-        <form action="/upload" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="file">Choose File</label>
-                <input type="file" class="form-control" id="file" name="file" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Upload File</button>
-        </form>
+{% extends "base.html" %}
+{% block title %}Home | DataPulse Analytics{% endblock %}
+{% block content %}
+<style>
+.hero {
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(rgba(10,20,40,0.7), rgba(10,20,40,0.7)), url('{{ url_for('static', filename='images/dashboard-bg.jpg') }}') center center / cover no-repeat;
+    color: #fff;
+    border-radius: 0 0 32px 32px;
+    margin-bottom: 40px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+}
+.hero h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #00f0ff;
+    letter-spacing: 1px;
+}
+.hero p {
+    font-size: 1.3rem;
+    margin-bottom: 32px;
+    color: #e0ffff;
+}
+.hero .cta-btn {
+    padding: 16px 38px;
+    font-size: 1.2rem;
+    border: none;
+    background: #00f0ff;
+    color: #111;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 700;
+    box-shadow: 0 2px 12px rgba(0,240,255,0.12);
+    transition: background 0.3s, color 0.3s;
+}
+.hero .cta-btn:hover {
+    background: #ff69b4;
+    color: #fff;
+}
+.features {
+    display: flex;
+    justify-content: space-around;
+    margin: 60px 20px;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+.feature-card {
+    background: #fff;
+    color: #23272f;
+    padding: 36px 28px;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(0,240,255,0.08);
+    flex: 1 1 250px;
+    min-width: 260px;
+    max-width: 340px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-align: center;
+    margin: 10px 0;
+}
+.feature-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 10px 32px rgba(0,240,255,0.18);
+}
+.feature-card h2 {
+    font-size: 1.4rem;
+    color: #00bcd4;
+    margin-bottom: 14px;
+    font-weight: 700;
+}
+.feature-card p {
+    color: #555;
+    font-size: 1.08rem;
+}
+@media (max-width: 900px) {
+    .features { flex-direction: column; align-items: center; }
+    .feature-card { min-width: 220px; max-width: 95vw; }
+}
+</style>
+<section class="hero">
+    <h1>Analyze Data Instantly</h1>
+    <p>Upload your datasets, visualize trends, and interact with your data using our AI-powered analytics platform.</p>
+    <button class="cta-btn" onclick="window.location.href='/data-source'">Get Started</button>
+</section>
+<section class="features">
+    <div class="feature-card">
+        <h2>Smart Upload</h2>
+        <p>Seamlessly upload CSV, Excel, and JSON files for instant processing and analysis.</p>
     </div>
-</body>
-</html>
+    <div class="feature-card">
+        <h2>Interactive Visuals</h2>
+        <p>Generate and customize stunning graphs and charts in seconds with intuitive controls.</p>
+    </div>
+    <div class="feature-card">
+        <h2>NLP Chatbot</h2>
+        <p>Ask data-related queries in simple English and get instant, AI-powered answers!</p>
+    </div>
+</section>
+<script>
+    // Animated cursor
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+        cursor.style.top = e.pageY - 10 + 'px';
+        cursor.style.left = e.pageX - 10 + 'px';
+    });
+    document.querySelectorAll('a, button, .feature-card').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cursor.style.transform = 'scale(2)';
+        });
+        el.addEventListener('mouseleave', () => {
+            cursor.style.transform = 'scale(1)';
+        });
+    });
+</script>
+{% endblock %}

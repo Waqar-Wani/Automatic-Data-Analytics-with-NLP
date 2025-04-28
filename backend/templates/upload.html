@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Upload Dataset | DataPulse Analytics{% endblock %}
+{% block content %}
+<div class="container">
+    <h1><i class="fas fa-upload"></i> Upload Dataset</h1>
+    <p>Select a CSV, Excel, or JSON file to begin your analysis.</p>
+    <div class="upload-box">
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <label for="file">Choose File:</label>
+            <input type="file" id="file" name="file" required>
+            <button type="submit">Upload & Analyze</button>
+        </form>
+    </div>
+    <a href="/data-source" class="back-link"><i class="fas fa-arrow-left"></i> Back to Data Source Selection</a>
+</div>
+{% endblock %} 
