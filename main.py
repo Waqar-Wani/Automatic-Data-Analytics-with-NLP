@@ -3,16 +3,15 @@ import os
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 import pandas as pd
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 import plotly.express as px
 from dotenv import load_dotenv
-import requests
-import re
-from openai import OpenAI
+import PyPDF2
 
 from backend.data_preprocessing.file_processing import read_file
 from backend.data_preprocessing.data_cleaning import handle_missing_values, normalize_column_names
 from backend.data_preprocessing.data_overview import generate_overview
+from backend.nlp_routes import nlp_bp
 
 # Initialize Flask app
 app = Flask(__name__, static_folder=os.path.join('backend', 'static'), template_folder=os.path.join('backend', 'templates'))
@@ -25,80 +24,6 @@ from flask_cors import CORS, cross_origin
 CORS(app)
 
 load_dotenv()
-DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY')
-HF_API_KEY = os.getenv('HF_API_KEY')
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-print("OPENAI_API_KEY:", repr(OPENAI_API_KEY))  # For debugging
-client = OpenAI(api_key=OPENAI_API_KEY)
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-
-def call_deepseek_api(prompt):
-    url = "https://api.deepseek.com/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "model": "deepseek-chat",
-        "messages": [
-            {"role": "user", "content": prompt}
-        ]
-    }
-    response = requests.post(url, headers=headers, json=data)
-    response.raise_for_status()
-    return response.json()["choices"][0]["message"]["content"]
-
-def call_huggingface_api(prompt):
-    url = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta"
-    headers = {
-        "Authorization": f"Bearer {HF_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "inputs": prompt,
-        "parameters": {"max_new_tokens": 256}
-    }
-    response = requests.post(url, headers=headers, json=data)
-    response.raise_for_status()
-    result = response.json()
-    if isinstance(result, list) and 'generated_text' in result[0]:
-        return result[0]['generated_text']
-    elif 'generated_text' in result:
-        return result['generated_text']
-    elif 'error' in result:
-        return f"Error from Hugging Face: {result['error']}"
-    else:
-        return str(result)
-
-def call_openai_api(prompt):
-    response = client.chat.completions.create(
-        model='gpt-3.5-turbo',
-        messages=[{'role': 'user', 'content': prompt}],
-        max_tokens=512,
-        temperature=0
-    )
-    return response.choices[0].message.content
-
-def call_openrouter_api(prompt):
-    url = "https://openrouter.ai/api/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "model": "openchat/openchat-3.5-0106",
-        "messages": [{"role": "user", "content": prompt}]
-    }
-    response = requests.post(url, headers=headers, json=data)
-    response.raise_for_status()
-    result = response.json()
-    return result["choices"][0]["message"]["content"]
-
-def extract_code_from_response(response):
-    match = re.search(r'```python\n(.*?)```', response, re.DOTALL)
-    if match:
-        return match.group(1)
-    return None
 
 @app.route('/')
 def index():
@@ -184,45 +109,6 @@ def dashboard():
         print(f"Error: {str(e)}")
         return f"Error generating chart: {str(e)}"
 
-@app.route('/nlp_query', methods=['POST'])
-def nlp_query():
-    data = request.get_json()
-    query = data['query']
-    temp_id = data['temp_id']
-    df = cache.get(temp_id)
-    if df is None:
-        return jsonify({'html': 'Dataset not found.'})
-
-    schema = ', '.join([f'{col} ({dtype})' for col, dtype in zip(df.columns, df.dtypes)])
-    prompt = f"You are a data analyst. The dataset columns are: {schema}. User question: {query}. Respond with a pandas command to answer the question."
-
-    try:
-        ai_response = call_openai_api(prompt)
-        code = extract_code_from_response(ai_response)
-        if code:
-            code = code.replace("pd.read_csv('fruit_prices.csv')", "df")
-            local_vars = {'df': df}
-            try:
-                exec(code, {}, local_vars)
-                result = None
-                for line in code.splitlines():
-                    if '=' in line:
-                        var_name = line.split('=')[0].strip()
-                        if var_name in local_vars:
-                            result = local_vars[var_name]
-                            break
-                if result is None:
-                    result = 'No result variable found.'
-                html = f"<b>AI Response:</b><br><pre>{ai_response}</pre><br><b>Result:</b> {result}"
-            except Exception as ex:
-                html = f"<b>AI Response:</b><br><pre>{ai_response}</pre><br><b>Code execution error:</b> {ex}"
-        else:
-            html = f"<b>AI Response:</b><br><pre>{ai_response}</pre>"
-    except Exception as e:
-        html = f"Error: {e}"
-
-    return jsonify({'html': html})
-
 @app.route('/data/<temp_id>')
 @cross_origin()
 def get_data(temp_id):
@@ -274,24 +160,28 @@ def get_data(temp_id):
             'error': str(e)
         })
 
-@app.route('/chatbot_test')
-def chatbot_test():
-    return render_template('chatbot_test.html')
-
-@app.route('/chatbot_test_api', methods=['POST'])
-def chatbot_test_api():
-    data = request.get_json()
-    query = data['query']
-    try:
-        ai_response = call_openrouter_api(query)
-        html = f"<b>AI Response:</b><br><pre>{ai_response}</pre>"
-    except Exception as e:
-        html = f"Error: {e}"
-    return jsonify({'html': html})
-
 @app.route('/data-source')
 def data_source():
     return render_template('data_source.html')
+
+@app.route('/about-project')
+def about_project():
+    pdf_path = os.path.join('Datasets', 'AI Powered Data Analysis with NLP.pdf')
+    pdf_text = ""
+    try:
+        with open(pdf_path, 'rb') as f:
+            reader = PyPDF2.PdfReader(f)
+            for page in reader.pages:
+                pdf_text += page.extract_text() + "\n"
+    except Exception as e:
+        pdf_text = f"Could not extract PDF content: {e}"
+    return render_template('about_project.html', pdf_text=pdf_text)
+
+@app.route('/datasets/<filename>')
+def serve_dataset(filename):
+    return send_from_directory('Datasets', filename)
+
+app.register_blueprint(nlp_bp)
 
 if __name__ == '__main__':
     app.run(debug=True)
