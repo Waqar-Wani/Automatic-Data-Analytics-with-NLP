@@ -1,71 +1,102 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Data Preview</title>
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.7.0/css/select.dataTables.min.css">
-
-    <style>
-        body {
-            padding: 20px;
-        }
-        .dataTables_wrapper {
-            margin-top: 20px;
-        }
-        th, td {
-            white-space: nowrap;
-        }
-        thead th {
-            position: sticky;
-            top: 0;
-            background-color: #f8f9fa;
-            z-index: 10;
-        }
-        .data-container {
-            overflow-x: auto;
-        }
-        .upload-btn-container {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Upload New File Button -->
-    <div class="upload-btn-container">
-        <a href="/" class="btn btn-primary">Homepage</a>
-    </div>
-
-    <!-- Chart Generation Section -->
+{% extends "base.html" %}
+{% block title %}Data Preview | DataPulse Analytics{% endblock %}
+{% block head %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/select/1.7.0/css/select.dataTables.min.css">
+<style>
+.preview-hero {
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #fff;
+    border-radius: 0 0 32px 32px;
+    margin-bottom: 40px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+}
+.preview-hero h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #00f0ff;
+    margin-bottom: 10px;
+}
+.preview-hero p {
+    font-size: 1.15rem;
+    color: #e0ffff;
+}
+.preview-card {
+    background: #fff;
+    color: #23272f;
+    padding: 32px 24px;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(0,240,255,0.08);
+    max-width: 1200px;
+    margin: 0 auto 32px auto;
+}
+.preview-btn {
+    padding: 14px 32px;
+    font-size: 1.1rem;
+    border: none;
+    background: #00f0ff;
+    color: #111;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 700;
+    box-shadow: 0 2px 12px rgba(0,240,255,0.12);
+    transition: background 0.3s, color 0.3s;
+    margin-top: 18px;
+}
+.preview-btn:hover {
+    background: #ff69b4;
+    color: #fff;
+}
+@media (max-width: 700px) {
+    .preview-card { padding: 16px 2vw; }
+    .preview-hero h2 { font-size: 1.3rem; }
+}
+.chart-form-flex {
+    display: flex;
+    gap: 24px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+.chart-form-flex > div {
+    flex: 1 1 220px;
+    min-width: 180px;
+}
+@media (max-width: 700px) {
+    .chart-form-flex {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+</style>
+{% endblock %}
+{% block content %}
+<section class="preview-hero" style="background: linear-gradient(rgba(10,20,40,0.7), rgba(10,20,40,0.7)), url('{{ url_for('static', filename='images/dashboard-bg.jpg') }}') center center / cover no-repeat;">
     <h2>Dataset Overview</h2>
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">Basic Information</h5>
-            <ul class="list-group list-group-flush">
-                {% for key, value in overview.items() %}
-                    {% if key != 'Column Information' and key != 'columns' and key != 'numeric_columns' %}
-                    <li class="list-group-item">
-                        <strong>{{ key }}:</strong> {{ value }}
-                    </li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-        </div>
+    <p>Review your uploaded dataset, generate charts, and ask questions with our AI-powered tools.</p>
+</section>
+<div class="preview-card">
+    <h3 style="color:#00bcd4; font-weight:700;">Basic Information</h3>
+    <ul class="list-group list-group-flush mb-3">
+        {% for key, value in overview.items() %}
+            {% if key != 'Column Information' and key != 'columns' and key != 'numeric_columns' %}
+            <li class="list-group-item"><strong>{{ key }}:</strong> {{ value }}</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
     </div>
-    <h3>Generate a Chart</h3>
+<div class="preview-card">
+    <h3 style="color:#00bcd4; font-weight:700;">Generate a Chart</h3>
     <form method="POST" action="/dashboard">
         <input type="hidden" name="temp_path" value="{{ temp_path }}">
-        <div class="row mb-3">
-            <div class="col">
+        <div class="chart-form-flex mb-3">
+            <div>
                 <label for="chart_type" class="form-label">Chart Type</label>
                 <select name="chart_type" id="chart_type" class="form-select" required>
                     <option value="bar">Bar</option>
@@ -77,7 +108,7 @@
                     <option value="heatmap">Heatmap</option>
                 </select>
             </div>
-            <div class="col">
+            <div>
                 <label for="x_column" class="form-label">X-Axis (Category Column)</label>
                 <select name="x_column" id="x_column" class="form-select" required>
                     {% for col in overview.columns %}
@@ -85,7 +116,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="col">
+            <div>
                 <label for="y_column" class="form-label">Y-Axis (Numeric Column(s))</label>
                 <select name="y_column" id="y_column" class="form-select" multiple required>
                     {% for col in overview.numeric_columns %}
@@ -95,23 +126,21 @@
                 <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple columns.</small>
             </div>
         </div>
-        <button type="submit" class="btn btn-success">Generate Chart</button>
+        <button type="submit" class="preview-btn">Generate Chart</button>
     </form>
-    <!-- NLP Chatbot UI -->
-    <div class="card mt-4">
-      <div class="card-body">
-        <h5 class="card-title">Ask a Question (NLP Chatbot)</h5>
-        <form id="nlp-form">
-          <div class="input-group">
-            <input type="text" id="nlp-query" class="form-control" placeholder="Ask a question about your data...">
-            <button class="btn btn-primary" type="submit">Send</button>
-          </div>
-        </form>
-        <div id="nlp-response" class="mt-3"></div>
+</div>
+<div class="preview-card">
+    <h3 style="color:#00bcd4; font-weight:700;">Ask a Question (NLP Chatbot)</h3>
+    <form id="nlp-form">
+      <div class="input-group">
+        <input type="text" id="nlp-query" class="form-control" placeholder="Ask a question about your data...">
+        <button class="preview-btn" type="submit">Send</button>
       </div>
-    </div>
-    <!-- Data Table Section -->
-    <h2 class="mt-5">Data Preview</h2>
+    </form>
+    <div id="nlp-response" class="mt-3"></div>
+</div>
+<div class="preview-card">
+    <h3 style="color:#00bcd4; font-weight:700;">Data Preview</h3>
     <div class="data-container">
         <table id="data-table" class="display nowrap table table-bordered" style="width:100%">
             <thead>
@@ -125,85 +154,84 @@
             </tbody>
         </table>
     </div>
-
-    <!-- jQuery + DataTables -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.4/js/buttons.print.min.js"></script>
-    <script id="columns-json" type="application/json">
-        {{ overview.columns | tojson | safe }}
-    </script>
-    <script>
-        // DataTables AJAX
-        var columns = JSON.parse(document.getElementById('columns-json').textContent)
-            .map(function(col) { return {data: col}; });
-        $(document).ready(function () {
-            $('#data-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '/data/{{ temp_path }}',
-                    type: 'GET',
-                    dataSrc: 'data'
-                },
-                columns: columns,
-                scrollX: true,
-                pageLength: 25,
-                lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-                stateSave: true,
-                order: []
-            });
+</div>
+<!-- jQuery + DataTables -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.4/js/buttons.print.min.js"></script>
+<script id="columns-json" type="application/json">
+    {{ overview.columns | tojson | safe }}
+</script>
+<script>
+    // DataTables AJAX
+    var columns = JSON.parse(document.getElementById('columns-json').textContent)
+        .map(function(col) { return {data: col}; });
+    $(document).ready(function () {
+        $('#data-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '/data/{{ temp_path }}',
+                type: 'GET',
+                dataSrc: 'data'
+            },
+            columns: columns,
+            scrollX: true,
+            pageLength: 25,
+            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            stateSave: true,
+            order: []
         });
-        // Dynamic chart form fields
-        function updateFormFields() {
-            var chartType = document.getElementById('chart_type').value;
-            var xCol = document.getElementById('x_column');
-            var yCol = document.getElementById('y_column');
+    });
+    // Dynamic chart form fields
+    function updateFormFields() {
+        var chartType = document.getElementById('chart_type').value;
+        var xCol = document.getElementById('x_column');
+        var yCol = document.getElementById('y_column');
+        xCol.parentElement.style.display = '';
+        yCol.parentElement.style.display = '';
+        yCol.multiple = false;
+        yCol.required = true;
+        if (chartType === 'pie') {
             xCol.parentElement.style.display = '';
             yCol.parentElement.style.display = '';
             yCol.multiple = false;
-            yCol.required = true;
-            if (chartType === 'pie') {
-                xCol.parentElement.style.display = '';
-                yCol.parentElement.style.display = '';
-                yCol.multiple = false;
-            } else if (chartType === 'histogram') {
-                xCol.parentElement.style.display = '';
-                yCol.parentElement.style.display = 'none';
-                yCol.required = false;
-            } else if (chartType === 'scatter' || chartType === 'box' || chartType === 'heatmap') {
-                xCol.parentElement.style.display = '';
-                yCol.parentElement.style.display = '';
-                yCol.multiple = false;
-            } else if (chartType === 'bar' || chartType === 'line') {
-                xCol.parentElement.style.display = '';
-                yCol.parentElement.style.display = '';
-                yCol.multiple = true;
-            }
+        } else if (chartType === 'histogram') {
+            xCol.parentElement.style.display = '';
+            yCol.parentElement.style.display = 'none';
+            yCol.required = false;
+        } else if (chartType === 'scatter' || chartType === 'box' || chartType === 'heatmap') {
+            xCol.parentElement.style.display = '';
+            yCol.parentElement.style.display = '';
+            yCol.multiple = false;
+        } else if (chartType === 'bar' || chartType === 'line') {
+            xCol.parentElement.style.display = '';
+            yCol.parentElement.style.display = '';
+            yCol.multiple = true;
         }
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('chart_type').addEventListener('change', updateFormFields);
-            updateFormFields();
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('chart_type').addEventListener('change', updateFormFields);
+        updateFormFields();
+    });
+    // NLP Chatbot AJAX
+    document.getElementById('nlp-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var query = document.getElementById('nlp-query').value;
+        fetch('/nlp_query', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({query: query, temp_id: '{{ temp_path }}'})
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('nlp-response').innerHTML = data.html;
         });
-        // NLP Chatbot AJAX
-        document.getElementById('nlp-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            var query = document.getElementById('nlp-query').value;
-            fetch('/nlp_query', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({query: query, temp_id: '{{ temp_path }}'})
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('nlp-response').innerHTML = data.html;
-            });
-        });
-    </script>
-</body>
-</html>
+    });
+</script>
+{% endblock %}

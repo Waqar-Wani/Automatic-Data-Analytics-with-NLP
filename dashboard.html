@@ -1,0 +1,6 @@
+{% if y_column is string %}
+  {% set y_label = y_column %}
+{% else %}
+  {% set y_label = y_column | join(', ') %}
+{% endif %}
+<h2 class="chart-title">Generated Chart: {{ y_label }} by {{ x_column }}</h2> 

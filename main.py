@@ -3,24 +3,21 @@ import os
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 import pandas as pd
-from flask import Flask, render_template, request, jsonify, send_from_directory
-import plotly.express as px
+from flask import Flask, render_template, request, jsonify
 from dotenv import load_dotenv
-import PyPDF2
+from flask_cors import CORS, cross_origin
 
 from backend.data_preprocessing.file_processing import read_file
 from backend.data_preprocessing.data_cleaning import handle_missing_values, normalize_column_names
 from backend.data_preprocessing.data_overview import generate_overview
+from backend.data_preprocessing.data_cache import get_cache, set_cache
+from backend.data_visualization.chart_generation import generate_chart
 from backend.nlp_routes import nlp_bp
 
 # Initialize Flask app
 app = Flask(__name__, static_folder=os.path.join('backend', 'static'), template_folder=os.path.join('backend', 'templates'))
 
-# In-memory cache (for temporary session-like storage)
-cache = {}
-
 # Enable CORS for all routes
-from flask_cors import CORS, cross_origin
 CORS(app)
 
 load_dotenv()
@@ -41,8 +38,7 @@ def upload():
 
     try:
         file_name = file.filename
-        file_format = 'csv' if file.filename.endswith('.csv') else \
-                      'xls/xlsx' if file.filename.endswith(('.xls', '.xlsx')) else 'unknown'
+        file_format = 'csv' if file.filename.endswith('.csv') else 'xls/xlsx' if file.filename.endswith(('.xls', '.xlsx')) else 'json'
         data_type = 'Uploaded'
 
         df = read_file(file)
@@ -55,8 +51,8 @@ def upload():
         overview['numeric_columns'] = df.select_dtypes(include='number').columns.tolist()
 
         # Store DataFrame temporarily
-        temp_id = str(len(cache) + 1)
-        cache[temp_id] = df
+        temp_id = str(len(get_cache()) + 1)
+        set_cache(temp_id, df)
 
         # Render HTML table
         html_table = df.to_html(index=False, classes='display nowrap', border=0)
@@ -76,33 +72,35 @@ def upload():
 def dashboard():
     try:
         x_column = request.form.get('x_column')
-        y_column = request.form.get('y_column')
+        # Support multiple Y columns
+        y_column = request.form.getlist('y_column')
+        chart_type = request.form.get('chart_type', 'bar')  # Default to bar chart
         temp_id = request.form.get('temp_path')
+        color_column = request.form.get('color_column')  # New: group by
 
-        # Debugging the received data
-        print(f"Received data - temp_path: {temp_id}, x_column: {x_column}, y_column: {y_column}")
-
-        if not all([x_column, y_column, temp_id]):
+        if not all([x_column, y_column, temp_id]) or len(y_column) == 0:
             return "Missing required parameters. Please select both X and Y columns."
 
-        df = cache.get(temp_id)
+        df = get_cache().get(temp_id)
         if df is None:
             return "Session expired or dataset not found."
 
         # Validate that columns exist in the dataframe
-        if x_column not in df.columns or y_column not in df.columns:
+        if x_column not in df.columns or any(col not in df.columns for col in y_column):
             return f"Selected columns not found in dataset. Available columns: {', '.join(df.columns)}"
 
-        # Handle any NaN/undefined values in the selected columns
-        df = df.dropna(subset=[x_column, y_column])
+        # If only one Y column is selected, use as string for compatibility
+        y_column_arg = y_column if len(y_column) > 1 else y_column[0]
 
-        # Further processing for chart generation
-        fig = px.bar(df, x=x_column, y=y_column, title=f'Bar Chart: {x_column} by {y_column}')
+        # Generate chart using the chart_generation module
+        fig = generate_chart(df, x_column, y_column_arg, chart_type, color_column)
         graph_html = fig.to_html(full_html=False)
 
         return render_template('dashboard.html',
                                x_column=x_column,
                                y_column=y_column,
+                               chart_type=chart_type,
+                               color_column=color_column,
                                graph_html=graph_html)
 
     except Exception as e:
@@ -112,7 +110,7 @@ def dashboard():
 @app.route('/data/<temp_id>')
 @cross_origin()
 def get_data(temp_id):
-    df = cache.get(temp_id)
+    df = get_cache().get(temp_id)
     if df is None:
         return jsonify({
             'draw': int(request.args.get('draw', 1)),
@@ -145,11 +143,23 @@ def get_data(temp_id):
         # Paging
         data_page = df_filtered.iloc[start:start+length]
 
+        # Convert data to list of dictionaries, handling NaN values
+        data = []
+        for _, row in data_page.iterrows():
+            row_dict = {}
+            for col in df.columns:
+                val = row[col]
+                # Convert NaN to None for proper JSON serialization
+                if pd.isna(val):
+                    val = None
+                row_dict[col] = val
+            data.append(row_dict)
+
         return jsonify({
             'draw': draw,
             'recordsTotal': len(df),
             'recordsFiltered': len(df_filtered),
-            'data': data_page.to_dict(orient='records')
+            'data': data
         })
     except Exception as e:
         return jsonify({
@@ -166,20 +176,7 @@ def data_source():
 
 @app.route('/about-project')
 def about_project():
-    pdf_path = os.path.join('Datasets', 'AI Powered Data Analysis with NLP.pdf')
-    pdf_text = ""
-    try:
-        with open(pdf_path, 'rb') as f:
-            reader = PyPDF2.PdfReader(f)
-            for page in reader.pages:
-                pdf_text += page.extract_text() + "\n"
-    except Exception as e:
-        pdf_text = f"Could not extract PDF content: {e}"
-    return render_template('about_project.html', pdf_text=pdf_text)
-
-@app.route('/datasets/<filename>')
-def serve_dataset(filename):
-    return send_from_directory('Datasets', filename)
+    return render_template('about_project.html')
 
 app.register_blueprint(nlp_bp)
 
