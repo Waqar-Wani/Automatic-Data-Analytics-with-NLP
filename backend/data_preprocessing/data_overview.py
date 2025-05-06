@@ -1,5 +1,39 @@
 import pandas as pd
 import numpy as np
+from openai import OpenAI
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Initialize OpenRouter client
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=os.getenv("OPENROUTER_API_KEY"),
+)
+
+def get_ai_greeting():
+    """
+    Get a greeting response from OpenRouter AI model.
+    """
+    try:
+        response = client.chat.completions.create(
+            extra_headers={
+                "HTTP-Referer": "http://localhost:5000",
+                "X-Title": "Data Analytics App",
+            },
+            model="qwen/qwen3-0.6b-04-28:free",
+            messages=[
+                {"role": "system", "content": "You are a helpful AI assistant for a data analytics platform. Keep your responses friendly and concise."},
+                {"role": "user", "content": "Hi"}
+            ],
+            temperature=0.7,
+            max_tokens=100
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return "Hello! I'm your AI assistant. I'm here to help you analyze your data."
 
 def generate_overview(df, file_name, data_type, file_format):
     """
@@ -52,6 +86,9 @@ def generate_overview(df, file_name, data_type, file_format):
 
 def generate_dataset_summary(df):
     """
-    Generate a basic summary of the dataset (AI feature temporarily disabled).
+    Generate a basic summary of the dataset with a dynamic AI greeting response.
     """
-    return "AI Generated summary is still in development"
+    # Get dynamic greeting from AI
+    greeting_response = get_ai_greeting()
+    
+    return greeting_response

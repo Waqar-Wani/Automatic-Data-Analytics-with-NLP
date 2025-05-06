@@ -5,84 +5,17 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/select/1.7.0/css/select.dataTables.min.css">
-<style>
-.preview-hero {
-    min-height: 180px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: #fff;
-    border-radius: 0 0 32px 32px;
-    margin-bottom: 40px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
-}
-.preview-hero h2 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: #00f0ff;
-    margin-bottom: 10px;
-}
-.preview-hero p {
-    font-size: 1.15rem;
-    color: #e0ffff;
-}
-.preview-card {
-    background: #fff;
-    color: #23272f;
-    padding: 32px 24px;
-    border-radius: 18px;
-    box-shadow: 0 5px 20px rgba(0,240,255,0.08);
-    max-width: 1200px;
-    margin: 0 auto 32px auto;
-}
-.preview-btn {
-    padding: 14px 32px;
-    font-size: 1.1rem;
-    border: none;
-    background: #00f0ff;
-    color: #111;
-    border-radius: 50px;
-    cursor: pointer;
-    font-weight: 700;
-    box-shadow: 0 2px 12px rgba(0,240,255,0.12);
-    transition: background 0.3s, color 0.3s;
-    margin-top: 18px;
-}
-.preview-btn:hover {
-    background: #ff69b4;
-    color: #fff;
-}
-@media (max-width: 700px) {
-    .preview-card { padding: 16px 2vw; }
-    .preview-hero h2 { font-size: 1.3rem; }
-}
-.chart-form-flex {
-    display: flex;
-    gap: 24px;
-    align-items: flex-end;
-    flex-wrap: wrap;
-}
-.chart-form-flex > div {
-    flex: 1 1 220px;
-    min-width: 180px;
-}
-@media (max-width: 700px) {
-    .chart-form-flex {
-        flex-direction: column;
-        gap: 12px;
-    }
-}
-</style>
+<!-- Custom CSS -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/preview.css') }}">
+
 {% endblock %}
 {% block content %}
-<section class="preview-hero" style="background: linear-gradient(rgba(10,20,40,0.7), rgba(10,20,40,0.7)), url('{{ url_for('static', filename='images/dashboard-bg.jpg') }}') center center / cover no-repeat;">
+<section class="preview-hero">
     <h2>Dataset Overview</h2>
     <p>Review your uploaded dataset, generate charts, and ask questions with our AI-powered tools.</p>
 </section>
 <div class="preview-card">
-    <h3 style="color:#00bcd4; font-weight:700;">Basic Information</h3>
+    <h3>Basic Information</h3>
     <ul class="list-group list-group-flush mb-3">
         {% for key, value in overview.items() %}
             {% if key != 'Column Information' and key != 'columns' and key != 'numeric_columns' %}
@@ -90,22 +23,54 @@
             {% endif %}
         {% endfor %}
     </ul>
-    </div>
+</div>
 <div class="preview-card">
-    <h3 style="color:#00bcd4; font-weight:700;">Generate a Chart</h3>
+    <h3>Generate a Chart</h3>
     <form method="POST" action="/dashboard">
         <input type="hidden" name="temp_path" value="{{ temp_path }}">
         <div class="chart-form-flex mb-3">
             <div>
                 <label for="chart_type" class="form-label">Chart Type</label>
                 <select name="chart_type" id="chart_type" class="form-select" required>
-                    <option value="bar">Bar</option>
-                    <option value="line">Line</option>
-                    <option value="scatter">Scatter</option>
-                    <option value="pie">Pie</option>
-                    <option value="histogram">Histogram</option>
-                    <option value="box">Box</option>
-                    <option value="heatmap">Heatmap</option>
+                    <!-- Basic Charts -->
+                    <optgroup label="Basic Charts">
+                        <option value="bar">Bar Chart</option>
+                        <option value="line">Line Chart</option>
+                        <option value="scatter">Scatter Plot</option>
+                        <option value="pie">Pie Chart</option>
+                        <option value="histogram">Histogram</option>
+                        <option value="box">Box Plot</option>
+                        <option value="heatmap">Heatmap</option>
+                    </optgroup>
+                    <!-- Advanced Charts -->
+                    <optgroup label="Advanced Charts">
+                        <option value="area">Area Chart</option>
+                        <option value="bubble">Bubble Chart</option>
+                        <option value="donut">Donut Chart</option>
+                        <option value="stacked_bar">Stacked Bar Chart</option>
+                        <option value="horizontal_bar">Horizontal Bar Chart</option>
+                        <option value="violin">Violin Plot</option>
+                        <option value="treemap">Treemap</option>
+                        <option value="sunburst">Sunburst Chart</option>
+                        <option value="funnel">Funnel Chart</option>
+                        <option value="waterfall">Waterfall Chart</option>
+                    </optgroup>
+                    <!-- 2D Interactive Charts -->
+                    <optgroup label="2D Interactive Charts">
+                        <option value="contour">Contour Plot</option>
+                        <option value="density_heatmap">Density Heatmap</option>
+                        <option value="polar">Polar Chart</option>
+                        <option value="radar">Radar Chart</option>
+                        <option value="parallel_coordinates">Parallel Coordinates</option>
+                        <option value="parallel_categories">Parallel Categories</option>
+                    </optgroup>
+                    <!-- 3D Charts -->
+                    <optgroup label="3D Charts">
+                        <option value="scatter_3d">3D Scatter Plot</option>
+                        <option value="surface_3d">3D Surface Plot</option>
+                        <option value="line_3d">3D Line Plot</option>
+                        <option value="mesh_3d">3D Mesh Plot</option>
+                    </optgroup>
                 </select>
             </div>
             <div>
@@ -130,7 +95,7 @@
     </form>
 </div>
 <div class="preview-card">
-    <h3 style="color:#00bcd4; font-weight:700;">Ask a Question (NLP Chatbot)</h3>
+    <h3>Ask a Question (NLP Chatbot)</h3>
     <form id="nlp-form">
       <div class="input-group">
         <input type="text" id="nlp-query" class="form-control" placeholder="Ask a question about your data...">
@@ -140,7 +105,7 @@
     <div id="nlp-response" class="mt-3"></div>
 </div>
 <div class="preview-card">
-    <h3 style="color:#00bcd4; font-weight:700;">Data Preview</h3>
+    <h3>Data Preview</h3>
     <div class="data-container">
         <table id="data-table" class="display nowrap table table-bordered" style="width:100%">
             <thead>
@@ -193,28 +158,114 @@
         var chartType = document.getElementById('chart_type').value;
         var xCol = document.getElementById('x_column');
         var yCol = document.getElementById('y_column');
+        var yColHelp = yCol.parentElement.querySelector('.form-text');
+        var submitBtn = document.querySelector('button[type="submit"]');
+        
+        // Reset all fields
         xCol.parentElement.style.display = '';
         yCol.parentElement.style.display = '';
         yCol.multiple = false;
         yCol.required = true;
-        if (chartType === 'pie') {
-            xCol.parentElement.style.display = '';
-            yCol.parentElement.style.display = '';
-            yCol.multiple = false;
-        } else if (chartType === 'histogram') {
-            xCol.parentElement.style.display = '';
-            yCol.parentElement.style.display = 'none';
-            yCol.required = false;
-        } else if (chartType === 'scatter' || chartType === 'box' || chartType === 'heatmap') {
-            xCol.parentElement.style.display = '';
-            yCol.parentElement.style.display = '';
-            yCol.multiple = false;
-        } else if (chartType === 'bar' || chartType === 'line') {
-            xCol.parentElement.style.display = '';
-            yCol.parentElement.style.display = '';
-            yCol.multiple = true;
+        yColHelp.textContent = 'Hold Ctrl (Cmd on Mac) to select multiple columns.';
+        submitBtn.disabled = false;
+
+        // Add validation function
+        function validateSelection() {
+            var selectedColumns = Array.from(yCol.selectedOptions).map(opt => opt.value);
+            if (chartType === 'scatter_3d' || chartType === 'surface_3d' || 
+                chartType === 'line_3d' || chartType === 'mesh_3d') {
+                if (selectedColumns.length !== 2) {
+                    yColHelp.innerHTML = '<span style="color: #ff4444;">Please select exactly 2 numeric columns: Y-axis and Z-axis</span>';
+                    submitBtn.disabled = true;
+                    return false;
+                }
+            } else if (chartType === 'bubble') {
+                if (selectedColumns.length !== 2) {
+                    yColHelp.innerHTML = '<span style="color: #ff4444;">Please select exactly 2 numeric columns: Y-axis and bubble size</span>';
+                    submitBtn.disabled = true;
+                    return false;
+                }
+            }
+            submitBtn.disabled = false;
+            return true;
         }
+
+        // Configure fields based on chart type
+        switch(chartType) {
+            case 'pie':
+            case 'donut':
+            case 'treemap':
+            case 'sunburst':
+            case 'funnel':
+            case 'waterfall':
+                xCol.parentElement.style.display = '';
+                yCol.parentElement.style.display = '';
+                yCol.multiple = false;
+                yColHelp.textContent = 'Select a single numeric column for values.';
+                break;
+
+            case 'histogram':
+                xCol.parentElement.style.display = '';
+                yCol.parentElement.style.display = 'none';
+                yCol.required = false;
+                break;
+
+            case 'scatter':
+            case 'box':
+            case 'violin':
+            case 'heatmap':
+            case 'contour':
+            case 'density_heatmap':
+                xCol.parentElement.style.display = '';
+                yCol.parentElement.style.display = '';
+                yCol.multiple = false;
+                yColHelp.textContent = 'Select a single numeric column.';
+                break;
+
+            case 'bubble':
+                xCol.parentElement.style.display = '';
+                yCol.parentElement.style.display = '';
+                yCol.multiple = true;
+                yColHelp.innerHTML = 'Select exactly 2 columns:<br>1. Y-axis value<br>2. Bubble size';
+                break;
+
+            case 'scatter_3d':
+            case 'surface_3d':
+            case 'line_3d':
+            case 'mesh_3d':
+                xCol.parentElement.style.display = '';
+                yCol.parentElement.style.display = '';
+                yCol.multiple = true;
+                yColHelp.innerHTML = 'Select exactly 2 columns:<br>1. Y-axis value<br>2. Z-axis value';
+                break;
+
+            case 'parallel_coordinates':
+            case 'parallel_categories':
+                xCol.parentElement.style.display = '';
+                yCol.parentElement.style.display = '';
+                yCol.multiple = true;
+                yColHelp.textContent = 'Select multiple columns to show relationships between them.';
+                break;
+
+            case 'polar':
+            case 'radar':
+                xCol.parentElement.style.display = '';
+                yCol.parentElement.style.display = '';
+                yCol.multiple = true;
+                yColHelp.textContent = 'Select one or more numeric columns for radial values.';
+                break;
+
+            default:
+                xCol.parentElement.style.display = '';
+                yCol.parentElement.style.display = '';
+                yCol.multiple = true;
+                yColHelp.textContent = 'Hold Ctrl (Cmd on Mac) to select multiple columns.';
+        }
+
+        // Add event listener for column selection
+        yCol.addEventListener('change', validateSelection);
     }
+
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('chart_type').addEventListener('change', updateFormFields);
         updateFormFields();
