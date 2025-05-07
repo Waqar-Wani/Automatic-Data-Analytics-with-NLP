@@ -1,0 +1,264 @@
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.7;
+    background-color: #f9fafb;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.about-container {
+    display: flex;
+    justify-content: center;
+    padding: 48px 24px;
+}
+
+.about-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    width: 100%;
+    padding: 48px 36px;
+}
+
+.header-section h1 {
+    font-size: 2.2rem;
+    color: #003366;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.header-section .about-meta {
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.icon {
+    color: #00bcd4;
+    font-size: 1.5rem;
+}
+
+/* Section Styling */
+.section {
+    margin-bottom: 48px;
+}
+
+.section h2 {
+    font-size: 1.6rem;
+    color: #00bcd4;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.section p,
+.section li {
+    font-size: 1.08rem;
+    color: #333;
+}
+
+.section ul {
+    list-style-type: disc;
+    padding-left: 24px;
+    margin-bottom: 18px;
+}
+
+.section img {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-top: 18px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Intro Section */
+.intro-flex {
+    display: flex;
+    align-items: flex-start;
+    gap: 36px;
+    margin-top: 18px;
+}
+
+.intro-text {
+    flex: 2;
+}
+
+.intro-img {
+    flex: 1;
+    max-width: 420px;
+    border-radius: 12px;
+    object-fit: cover; /* Ensures the image fits within the container */
+    height: auto; /* Maintains aspect ratio */
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+    .intro-flex {
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .intro-img {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+@media (max-width: 700px) {
+    .about-card {
+        padding: 24px 6vw;
+    }
+
+    .header-section h1 {
+        font-size: 1.8rem;
+    }
+
+    .section h2 {
+        font-size: 1.4rem;
+    }
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: 48px;
+}
+
+.about-full-container {
+    width: 100vw;
+    min-height: 100vh;
+    background: #fff;
+    box-sizing: border-box;
+    padding: 48px 0;
+}
+
+@media (max-width: 700px) {
+    .about-full-container {
+        padding: 24px 0;
+    }
+}
+
+.about-main-container {
+    max-width: 1100px;
+    margin: 40px auto 40px auto;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+}
+
+.about-header-card {
+    background: #f5faff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    padding: 40px 32px 28px 32px;
+    text-align: center;
+}
+
+.about-header-card h1 {
+    font-size: 2.5rem;
+    color: #003366;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+}
+
+.about-header-card .about-meta {
+    margin-top: 10px;
+    font-size: 1.05rem;
+    color: #666;
+}
+
+.about-section-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    padding: 32px 28px 28px 28px;
+    margin-bottom: 0;
+}
+
+.about-section-card h2 {
+    font-size: 1.6rem;
+    color: #00bcd4;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.about-section-img {
+    display: block;
+    margin: 0 auto 22px auto;
+    max-width: 720px;
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.about-section-card ul {
+    list-style-type: disc;
+    padding-left: 28px;
+    margin-bottom: 0;
+    font-size: 1.08rem;
+}
+
+.about-section-card li {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.about-features-list .icon {
+    color: #00bcd4;
+    margin-right: 8px;
+}
+
+@media (max-width: 900px) {
+    .about-main-container {
+        padding: 0 4vw;
+    }
+    .about-header-card h1 {
+        font-size: 2rem;
+    }
+    .about-section-img {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .about-main-container {
+        padding: 0 2vw;
+    }
+    .about-header-card, .about-section-card {
+        padding: 18px 6vw;
+    }
+    .about-header-card h1 {
+        font-size: 1.3rem;
+    }
+    .about-section-card h2 {
+        font-size: 1.1rem;
+    }
+}
+
+.college-logo {
+    display: block;
+    margin: 0 auto 6px auto;
+    max-width: 260px;
+    height: auto;
+    border-radius: 8px;
+  }
+
+.college-logo-caption {
+    text-align: center;
+    font-size: 0.95rem;
+    color: #888;
+    margin-bottom: 8px;
+}

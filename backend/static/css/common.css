@@ -1,0 +1,180 @@
+/* Common header and footer styles for DataPulse Analytics */
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(120deg, #00f0ff 0%, #ff69b4 50%, #8e54e9 100%);
+    min-height: 100vh;
+}
+header {
+    background: #23272f;
+    color: #00f0ff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 32px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+.logo {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+}
+.logo i {
+    font-size: 1.8rem;
+    margin-right: 10px;
+    color: #00f0ff;
+}
+nav a {
+    color: #00f0ff;
+    margin: 0 15px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+nav a:hover {
+    color: #ff69b4;
+}
+footer {
+    background: #23272f;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    font-size: 16px;
+    margin-top: 40px;
+}
+.container {
+    max-width: 600px;
+    margin: 60px auto 0 auto;
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    padding: 40px 30px 30px 30px;
+    text-align: center;
+}
+.option-cards {
+    display: flex;
+    justify-content: space-around;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+.option-card {
+    background: linear-gradient(135deg, #00f0ff 0%, #ff69b4 100%);
+    color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    padding: 36px 28px;
+    flex: 1 1 220px;
+    min-width: 220px;
+    max-width: 260px;
+    margin: 10px 0;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.option-card:hover {
+    transform: translateY(-8px) scale(1.04);
+    box-shadow: 0 8px 32px rgba(0,240,255,0.18);
+}
+.option-card .icon {
+    font-size: 2.8rem;
+    margin-bottom: 18px;
+    color: #fff;
+    background: rgba(255,255,255,0.12);
+    border-radius: 50%;
+    padding: 18px;
+    display: inline-block;
+}
+.option-card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+.option-card p {
+    color: #f5f6fa;
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+.option-card .arrow {
+    position: absolute;
+    bottom: 18px;
+    right: 18px;
+    font-size: 1.5rem;
+    color: #fff;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.option-card:hover .arrow {
+    opacity: 1;
+}
+.upload-box {
+    background: linear-gradient(135deg, #00f0ff 0%, #ff69b4 100%);
+    color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    padding: 32px 20px 24px 20px;
+    margin-bottom: 20px;
+}
+.upload-box label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 500;
+    color: #fff;
+}
+.upload-box input[type=file] {
+    margin-bottom: 18px;
+    padding: 8px;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #fff;
+    background: #fff;
+    color: #23272f;
+}
+.upload-box button[type=submit] {
+    background: #fff;
+    color: #00bcd4;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background 0.3s, color 0.3s;
+}
+.upload-box button[type=submit]:hover {
+    background: #ff69b4;
+    color: #fff;
+}
+.back-link {
+    display: inline-block;
+    margin-top: 18px;
+    color: #00bcd4;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+.back-link:hover {
+    color: #ff69b4;
+}
+.interactive-tip {
+    margin: 30px 0 0 0;
+    background: #e0ffff;
+    color: #23272f;
+    border-radius: 10px;
+    padding: 18px 20px;
+    font-size: 1.08rem;
+    box-shadow: 0 2px 8px rgba(0,240,255,0.08);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+}
+.interactive-tip i {
+    color: #00bcd4;
+    font-size: 1.5rem;
+}
+@media (max-width: 700px) {
+    .option-cards { flex-direction: column; align-items: center; }
+    .container { margin: 30px 8px 0 8px; }
+} 

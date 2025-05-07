@@ -3,8 +3,11 @@ import re
 # backend/data_preprocessing/data_utils.py
 
 def handle_missing_values(df):
-    # Simple handling: drop rows with any NaNs
-    return df.dropna()
+    """
+    Handle missing values in the dataframe without dropping any rows.
+    Currently returns the dataframe as is, preserving all data.
+    """
+    return df
 
 def clean_column_name(name):
     # Function for cleaning column names
