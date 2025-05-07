@@ -58,7 +58,7 @@ def generate_dataset_summary(df, file_name=None):
     """
     try:
         # Convert the first 1000 rows to CSV string for context (limit size for prompt)
-        file_content = df.head(1000).to_csv(index=False)
+        file_content = df.head(7).to_csv(index=False)
         prompt = "Give a short, easy-to-understand summary of what info this data holds—keep it under 20 words"
         messages = [
             {"role": "system", "content": "You are a helpful AI assistant. You analyze uploaded datasets and provide concise summaries."},

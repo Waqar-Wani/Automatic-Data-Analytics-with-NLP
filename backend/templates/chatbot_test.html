@@ -158,12 +158,14 @@
                         <span class="remove-file" onclick="removeFile()">×</span>
                     </div>
                     <div id="file-content" class="file-content"></div>
-            </div>
-        </form>
+                </div>
+            </form>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script>
     let currentFile = null;
+    let parsedFileContent = null;
     let messageHistory = [];
 
     function addMessage(content, isUser = true) {
@@ -199,21 +201,42 @@
         const file = e.target.files[0];
         if (file) {
             currentFile = file;
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                const content = e.target.result;
-                document.getElementById('file-name').textContent = file.name;
-                document.getElementById('file-content').textContent = content;
-                document.getElementById('file-preview').classList.add('show');
-            };
-            
-            reader.readAsText(file);
+            const fileName = file.name;
+            document.getElementById('file-name').textContent = fileName;
+            // Check for .xlsx extension
+            if (fileName.endsWith('.xlsx')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const json = XLSX.utils.sheet_to_json(worksheet, {header:1});
+                    // Limit to first 7 rows
+                    const limitedJson = json.slice(0, 7);
+                    parsedFileContent = limitedJson;
+                    document.getElementById('file-content').textContent = JSON.stringify(limitedJson, null, 2);
+                    document.getElementById('file-preview').classList.add('show');
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    // For text files, split by lines and limit to first 7 lines
+                    const lines = content.split('\n').slice(0, 7).join('\n');
+                    parsedFileContent = lines;
+                    document.getElementById('file-content').textContent = lines;
+                    document.getElementById('file-preview').classList.add('show');
+                };
+                reader.readAsText(file);
+            }
         }
     });
 
     function removeFile() {
         currentFile = null;
+        parsedFileContent = null;
         document.getElementById('file-upload').value = '';
         document.getElementById('file-preview').classList.remove('show');
         document.getElementById('file-name').textContent = '';
@@ -242,8 +265,7 @@
 
         // If there's a file, include its content
         if (currentFile) {
-            const fileContent = document.getElementById('file-content').textContent;
-            requestData.file_content = fileContent;
+            requestData.file_content = typeof parsedFileContent === 'object' ? JSON.stringify(parsedFileContent) : parsedFileContent;
             requestData.file_name = currentFile.name;
         }
         
