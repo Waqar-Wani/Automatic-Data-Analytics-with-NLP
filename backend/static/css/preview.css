@@ -1,0 +1,197 @@
+/* Main Styles */
+:root {
+    --primary-color: #00f0ff;
+    --secondary-color: #ff69b4;
+    --dark-bg: #23272f;
+    --light-text: #e0ffff;
+    --card-shadow: 0 5px 20px rgba(0, 240, 255, 0.08);
+    --hero-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
+    --button-shadow: 0 2px 12px rgba(0, 240, 255, 0.12);
+    --hero-overlay: rgba(10, 20, 40, 0.7);
+}
+
+/* Hero Section */
+.preview-hero {
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--light-text);
+    border-radius: 0 0 32px 32px;
+    margin-bottom: 40px;
+    box-shadow: var(--hero-shadow);
+    background: linear-gradient(var(--hero-overlay), var(--hero-overlay)), url('../images/dashboard-bg.jpg');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.preview-hero h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.preview-hero p {
+    font-size: 1.15rem;
+    color: var(--light-text);
+}
+
+/* Card Styles */
+.preview-card {
+    background: #fff;
+    color: var(--dark-bg);
+    padding: 32px 24px;
+    border-radius: 18px;
+    box-shadow: var(--card-shadow);
+    max-width: 1200px;
+    margin: 0 auto 32px auto;
+    overflow-x: auto;
+}
+
+.preview-card h3 {
+    color: #00bcd4;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* Button Styles */
+.preview-btn {
+    padding: 14px 32px;
+    font-size: 1.1rem;
+    border: none;
+    background: var(--primary-color);
+    color: #111;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 700;
+    box-shadow: var(--button-shadow);
+    transition: background 0.3s, color 0.3s, transform 0.2s;
+}
+
+.preview-btn:hover {
+    background: var(--secondary-color);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.preview-btn:active {
+    transform: translateY(0);
+}
+
+/* Form Styles */
+.chart-form-flex {
+    display: flex;
+    gap: 24px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.chart-form-flex > div {
+    flex: 1 1 220px;
+    min-width: 180px;
+}
+
+.form-select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    transition: border-color 0.3s;
+}
+
+.form-select:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+.form-text {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Chart Container */
+.chart-container {
+    width: 100%;
+    min-height: 700px;
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Data Table Styles */
+.data-container {
+    margin-top: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    text-align: left;
+    padding: 12px;
+}
+
+.table td {
+    padding: 12px;
+    border-top: 1px solid #dee2e6;
+}
+
+/* NLP Chat Styles */
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#nlp-query {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+#nlp-query:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+#nlp-response {
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    margin-top: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 700px) {
+    .preview-card {
+        padding: 16px 2vw;
+    }
+    
+    .preview-hero h2 {
+        font-size: 1.3rem;
+    }
+    
+    .chart-form-flex {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .preview-btn {
+        width: 100%;
+        padding: 12px 24px;
+    }
+} 

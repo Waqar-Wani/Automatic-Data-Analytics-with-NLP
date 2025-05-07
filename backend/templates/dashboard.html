@@ -1,67 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Dashboard | DataPulse Analytics{% endblock %}
 {% block head %}
-<style>
-.dashboard-hero {
-    min-height: 220px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: #fff;
-    border-radius: 0 0 32px 32px;
-    margin-bottom: 40px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
-}
-.dashboard-hero h2 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: #00f0ff;
-    margin-bottom: 10px;
-}
-.dashboard-hero p {
-    font-size: 1.15rem;
-    color: #e0ffff;
-}
-.dashboard-card {
-    background: #fff;
-    color: #23272f;
-    padding: 36px 28px;
-    border-radius: 18px;
-    box-shadow: 0 5px 20px rgba(0,240,255,0.08);
-    max-width: 900px;
-    margin: 0 auto 40px auto;
-    text-align: center;
-}
-.dashboard-card h3 {
-    color: #00bcd4;
-    font-size: 1.4rem;
-    margin-bottom: 18px;
-    font-weight: 700;
-}
-.dashboard-btn {
-    padding: 14px 32px;
-    font-size: 1.1rem;
-    border: none;
-    background: #00f0ff;
-    color: #111;
-    border-radius: 50px;
-    cursor: pointer;
-    font-weight: 700;
-    box-shadow: 0 2px 12px rgba(0,240,255,0.12);
-    transition: background 0.3s, color 0.3s;
-    margin-top: 24px;
-}
-.dashboard-btn:hover {
-    background: #ff69b4;
-    color: #fff;
-}
-@media (max-width: 700px) {
-    .dashboard-card { padding: 18px 4vw; }
-    .dashboard-hero h2 { font-size: 1.3rem; }
-}
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 {% endblock %}
 {% block content %}
 <section class="dashboard-hero" style="background: linear-gradient(rgba(10,20,40,0.7), rgba(10,20,40,0.7)), url('{{ url_for('static', filename='images/dashboard-bg.jpg') }}') center center / cover no-repeat;">
@@ -76,8 +16,23 @@
     {% endif %}
     {% set chart_type_label = chart_type.capitalize() + ' Chart' %}
     <h3>{{ chart_type_label }} for {{ y_label }} by {{ x_column }}</h3>
-    <!-- Plotly Chart -->
-    <div id="chart">{{ graph_html | safe }}</div>
+    <!-- Plotly Chart with enhanced container -->
+    <div class="chart-container">
+        <div id="chart">{{ graph_html | safe }}</div>
+    </div>
     <a href="javascript:history.back()" class="dashboard-btn">Back to Chart Options</a>
 </div>
+
+<!-- Add responsive chart sizing script -->
+<script>
+window.addEventListener('resize', function() {
+    // Trigger Plotly to reflow the chart
+    if (document.getElementById('chart').data) {
+        Plotly.Plots.resize(document.getElementById('chart'));
+    }
+});
+
+// Initial resize to ensure proper sizing
+window.dispatchEvent(new Event('resize'));
+</script>
 {% endblock %}

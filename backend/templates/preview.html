@@ -19,7 +19,11 @@
     <ul class="list-group list-group-flush mb-3">
         {% for key, value in overview.items() %}
             {% if key != 'Column Information' and key != 'columns' and key != 'numeric_columns' %}
-            <li class="list-group-item"><strong>{{ key }}:</strong> {{ value }}</li>
+                {% if key == 'Dataset Summary' %}
+                    <li class="list-group-item"><strong>{{ key }}:</strong> {{ value|safe }}</li>
+                {% else %}
+                    <li class="list-group-item"><strong>{{ key }}:</strong> {{ value }}</li>
+                {% endif %}
             {% endif %}
         {% endfor %}
     </ul>

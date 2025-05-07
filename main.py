@@ -45,7 +45,7 @@ def upload():
         df = handle_missing_values(df)
         df = normalize_column_names(df)
 
-        # Overview
+        # Overview (handles all AI summary and error logic)
         overview = generate_overview(df, file_name, data_type, file_format)
         overview['columns'] = df.columns.tolist()
         overview['numeric_columns'] = df.select_dtypes(include='number').columns.tolist()
@@ -66,7 +66,8 @@ def upload():
                                temp_path=temp_id)
 
     except Exception as e:
-        return f"Error reading file: {str(e)}"
+        error_msg = str(e)
+        return f"Error reading file: {error_msg}"
 
 @app.route('/dashboard', methods=['POST'])
 def dashboard():
@@ -77,6 +78,8 @@ def dashboard():
         chart_type = request.form.get('chart_type', 'bar')  # Default to bar chart
         temp_id = request.form.get('temp_path')
         color_column = request.form.get('color_column')  # New: group by
+        sort_order = request.form.get('sort_order', 'asc')
+        custom_order = request.form.get('custom_order', None)
 
         if not all([x_column, y_column, temp_id]) or len(y_column) == 0:
             return "Missing required parameters. Please select both X and Y columns."
@@ -93,7 +96,7 @@ def dashboard():
         y_column_arg = y_column if len(y_column) > 1 else y_column[0]
 
         # Generate chart using the chart_generation module
-        fig = generate_chart(df, x_column, y_column_arg, chart_type, color_column)
+        fig = generate_chart(df, x_column, y_column_arg, chart_type, color_column, sort_order, custom_order)
         graph_html = fig.to_html(full_html=False)
 
         return render_template('dashboard.html',
@@ -101,6 +104,8 @@ def dashboard():
                                y_column=y_column,
                                chart_type=chart_type,
                                color_column=color_column,
+                               sort_order=sort_order,
+                               custom_order=custom_order,
                                graph_html=graph_html)
 
     except Exception as e:

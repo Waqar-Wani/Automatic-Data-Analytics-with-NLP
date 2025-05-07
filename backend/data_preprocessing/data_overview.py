@@ -1,39 +1,11 @@
 import pandas as pd
 import numpy as np
-from openai import OpenAI
+from backend.utils.openrouter_client import call_openrouter_api
 import os
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
-
-# Initialize OpenRouter client
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY"),
-)
-
-def get_ai_greeting():
-    """
-    Get a greeting response from OpenRouter AI model.
-    """
-    try:
-        response = client.chat.completions.create(
-            extra_headers={
-                "HTTP-Referer": "http://localhost:5000",
-                "X-Title": "Data Analytics App",
-            },
-            model="qwen/qwen3-0.6b-04-28:free",
-            messages=[
-                {"role": "system", "content": "You are a helpful AI assistant for a data analytics platform. Keep your responses friendly and concise."},
-                {"role": "user", "content": "Hi"}
-            ],
-            temperature=0.7,
-            max_tokens=100
-        )
-        return response.choices[0].message.content
-    except Exception as e:
-        return "Hello! I'm your AI assistant. I'm here to help you analyze your data."
 
 def generate_overview(df, file_name, data_type, file_format):
     """
@@ -56,8 +28,7 @@ def generate_overview(df, file_name, data_type, file_format):
         'Number of Columns': len(df.columns),
         'Column Information': {},
         'Missing Values': {},
-        'Data Types': {},
-        'Dataset Summary': generate_dataset_summary(df)
+        'Dataset Summary': generate_dataset_summary(df, file_name)
     }
 
     # Column Information
@@ -65,30 +36,45 @@ def generate_overview(df, file_name, data_type, file_format):
         overview['Column Information'][col] = {
             'Type': str(df[col].dtype),
             'Unique Values': df[col].nunique(),
-            'Missing Values': int(df[col].isnull().sum())  # Convert to int
+            'Missing Values': int(df[col].isnull().sum())
         }
 
     # Missing Values Summary
     missing_values = df.isnull().sum()
-    total_missing = int(missing_values.sum())  # Convert to int
-    columns_with_missing = {col: int(count) for col, count in missing_values[missing_values > 0].items()}  # Convert to int
-    
-    overview['Missing Values'] = {
-        'Total Missing Values': total_missing,
-        'Columns with Missing Values': columns_with_missing
-    }
-
-    # Data Types Summary
-    data_types = df.dtypes.value_counts().to_dict()
-    overview['Data Types'] = {str(k): int(v) for k, v in data_types.items()}
+    total_missing = int(missing_values.sum())
+    columns_with_missing = {col: int(count) for col, count in missing_values[missing_values > 0].items()}
+    if total_missing == 0:
+        missing_values_str = "No missing values."
+    else:
+        missing_cols_str = ", ".join([f"{col}: {count}" for col, count in columns_with_missing.items()])
+        missing_values_str = f"Total missing values: {total_missing}. Columns with missing values: {missing_cols_str}"
+    overview['Missing Values'] = missing_values_str
 
     return overview
 
-def generate_dataset_summary(df):
+def generate_dataset_summary(df, file_name=None):
     """
-    Generate a basic summary of the dataset with a dynamic AI greeting response.
+    Generate a basic summary of the dataset by sending a prompt and the file content to the AI model.
     """
-    # Get dynamic greeting from AI
-    greeting_response = get_ai_greeting()
-    
-    return greeting_response
+    try:
+        # Convert the first 1000 rows to CSV string for context (limit size for prompt)
+        file_content = df.head(1000).to_csv(index=False)
+        prompt = "Give a short, easy-to-understand summary of what info this data holds—keep it under 20 words"
+        messages = [
+            {"role": "system", "content": "You are a helpful AI assistant. You analyze uploaded datasets and provide concise summaries."},
+            {"role": "user", "content": f"File: {file_name if file_name else 'uploaded_data.csv'}\n\nContent:\n{file_content}\n\nUser question: {prompt}"}
+        ]
+        response = call_openrouter_api(messages)
+        return response
+    except Exception as e:
+        error_msg = str(e)
+        if "Rate limit exceeded" in error_msg:
+            return """
+                <div class="alert alert-warning" role="alert">
+                    <h4 class="alert-heading">AI Model Limit Reached</h4>
+                    <p>The AI model has reached its daily usage limit.</p>
+                    <hr>
+                    <p class="mb-0">Please try again tomorrow or upgrade your account for more requests.</p>
+                </div>
+            """
+        return f"<div class='alert alert-warning'>Unable to generate AI summary: {error_msg}</div>"

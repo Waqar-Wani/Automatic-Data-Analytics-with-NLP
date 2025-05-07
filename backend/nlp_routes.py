@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, render_template
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
+from backend.utils.openrouter_client import call_openrouter_api
 
 nlp_bp = Blueprint('nlp', __name__)
 
@@ -9,52 +10,13 @@ nlp_bp = Blueprint('nlp', __name__)
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_API_KEY = "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"
 
 # Initialize OpenRouter client
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=OPENROUTER_API_KEY,
 )
-
-def call_openrouter_api(messages):
-    if not OPENROUTER_API_KEY:
-        raise ValueError("OpenRouter API key is not set. Please check your .env file.")
-    
-    try:
-        response = client.chat.completions.create(
-            extra_headers={
-                "HTTP-Referer": "http://localhost:5000",  # Your site URL
-                "X-Title": "Data Analytics App",  # Your site name
-            },
-            model="qwen/qwen3-0.6b-04-28:free",
-            messages=messages,
-            temperature=0.7,
-            max_tokens=1000
-        )
-        
-        # Validate response structure
-        if not response or not hasattr(response, 'choices') or not response.choices:
-            raise Exception("Invalid response from OpenRouter API")
-            
-        if not response.choices[0] or not hasattr(response.choices[0], 'message'):
-            raise Exception("Invalid message in OpenRouter API response")
-            
-        if not response.choices[0].message or not hasattr(response.choices[0].message, 'content'):
-            raise Exception("Invalid content in OpenRouter API response")
-            
-        return response.choices[0].message.content
-        
-    except Exception as e:
-        error_msg = str(e)
-        if "insufficient_quota" in error_msg.lower():
-            raise Exception("OpenRouter API quota exceeded. Please try again later.")
-        elif "invalid_api_key" in error_msg.lower():
-            raise Exception("Invalid OpenRouter API key. Please check your API key.")
-        elif "rate_limit" in error_msg.lower():
-            raise Exception("Rate limit exceeded. Please try again in a few moments.")
-        else:
-            raise Exception(f"Error calling OpenRouter API: {error_msg}")
 
 def extract_code_from_response(response):
     """Extract code blocks from the AI response."""
@@ -66,6 +28,11 @@ def parse_api_error_message(e):
     msg = str(e)
     if 'API key is not set' in msg:
         return "<b>OpenRouter API Error:</b> API key is not set. Please add your OpenRouter API key to your .env file."
+    elif 'Rate limit exceeded' in msg:
+        return """<b>OpenRouter API Rate Limit Reached:</b><br>
+        You've reached the daily limit for free API calls.<br>
+        Please try again tomorrow or add credits to your OpenRouter account to increase the limit.<br>
+        <a href='https://openrouter.ai/credits' target='_blank'>Add Credits to OpenRouter</a>"""
     return f"<b>OpenRouter API Error:</b> {msg}"
 
 # NLP Query Route
