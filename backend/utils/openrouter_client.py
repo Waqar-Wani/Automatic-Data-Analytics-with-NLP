@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 
 # Initialize OpenRouter client
 client = OpenAI(
@@ -14,7 +14,7 @@ client = OpenAI(
     api_key=OPENROUTER_API_KEY,
 )
 
-def call_openrouter_api(messages, model="qwen/qwen3-0.6b-04-28:free"):
+def call_openrouter_api(messages, model="qwen/qwen3-0.6b-04-28:free", max_tokens=200):
     if not OPENROUTER_API_KEY:
         raise ValueError("OpenRouter API key is not set. Please check your .env file.")
     try:
@@ -28,7 +28,7 @@ def call_openrouter_api(messages, model="qwen/qwen3-0.6b-04-28:free"):
             model="qwen/qwen3-0.6b-04-28:free",
             messages=messages,
             temperature=0.7,
-            max_tokens=1000
+            max_tokens=200
         )
         print(f"Received response: {response}")
         # Check for rate limit error in response

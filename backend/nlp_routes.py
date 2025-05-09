@@ -10,7 +10,7 @@ nlp_bp = Blueprint('nlp', __name__)
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 
 # Initialize OpenRouter client
 client = OpenAI(
@@ -94,6 +94,8 @@ def chatbot_test_api():
     data = request.get_json()
     query = data['query']
     message_history = data.get('message_history', [])
+    # Hardcoded max_tokens value
+    max_tokens = 200
     
     # Prepare the messages array with conversation history
     messages = []
@@ -101,7 +103,7 @@ def chatbot_test_api():
     # Add system message to set context
     messages.append({
         "role": "system",
-        "content": "You are a helpful AI assistant. You maintain context from previous messages in the conversation."
+        "content": "You are a helpful AI assistant. You maintain context from previous messages in the conversation. Keep your responses concise and under 200 tokens."
     })
     
     # Add message history
@@ -127,7 +129,7 @@ def chatbot_test_api():
 
     try:
         try:
-            response = call_openrouter_api(messages)
+            response = call_openrouter_api(messages, max_tokens=max_tokens)
         except Exception as e:
             print(f"OpenRouter API error: {str(e)}")
             return jsonify({'html': parse_api_error_message(e)})
