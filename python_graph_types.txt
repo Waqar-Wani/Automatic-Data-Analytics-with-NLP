@@ -1,37 +1,129 @@
-LineChart - Matplotlib==3.8.3,Seaborn==0.13.2,Plotly==5.20.0  
-BarChart - Matplotlib==3.8.3,Seaborn==0.13.2,Plotly==5.20.0  
-PieChart - Matplotlib==3.8.3,Plotly==5.20.0  
-ScatterPlot - Matplotlib==3.8.3,Seaborn==0.13.2,Plotly==5.20.0  
-AreaChart - Plotly==5.20.0,Matplotlib==3.8.3  
-BoxPlot - Seaborn==0.13.2,Plotly==5.20.0  
-ViolinPlot - Seaborn==0.13.2  
-Heatmap - Seaborn==0.13.2,Plotly==5.20.0  
-BubbleChart - Plotly==5.20.0  
-DonutChart - Plotly==5.20.0  
-StackedBarChart - Matplotlib==3.8.3,Plotly==5.20.0  
-HorizontalBarChart - Matplotlib==3.8.3,Plotly==5.20.0  
-PairPlot - Seaborn==0.13.2  
-SwarmPlot - Seaborn==0.13.2  
-StripPlot - Seaborn==0.13.2  
-StepPlot - Matplotlib==3.8.3  
-PolarPlot - Matplotlib==3.8.3,Plotly==5.20.0  
-3DSurfacePlot - Plotly==5.20.0  
-3DScatterPlot - Plotly==5.20.0  
-TreemapPlotly==5.20.0  
-SunburstChart - Plotly==5.20.0  
-FunnelChart - Plotly==5.20.0  
-WaterfallChart - Plotly==5.20.0  
-ContourPlot - Matplotlib==3.8.3,Plotly==5.20.0  
-HexbinPlot - Matplotlib==3.8.3  
-ChoroplethMap - Plotly==5.20.0  
-TimeSeriesPlot - Matplotlib==3.8.3,Seaborn==0.13.2  
-NetworkGraph - NetworkX==3.3,Plotly==5.20.0  
-GanttChart - Plotly==5.20.0  
-ErrorBarChart - Matplotlib==3.8.3  
-Candlestick-Chart - Plotly==5.20.0  
-DotPlot - Seaborn==0.13.2  
-WordCloud - wordcloud==1.9.3  
-GeographicalMap - Plotly==5.20.0,geopandas==0.14.3  
-SankeyDiagram - Plotly==5.20.0  
-ParallelCoordinates-Plot - Plotly==5.20.0  
-TableView - Plotly==5.20.0  
+absl-py==2.1.0
+annotated-types==0.7.0
+anyio==4.6.2.post1
+astunparse==1.6.3
+blinker==1.9.0
+blis==1.3.0
+catalogue==2.0.10
+certifi==2024.8.30
+charset-normalizer==3.4.0
+click==8.1.8
+cloudpathlib==0.21.0
+colorama==0.4.6
+confection==0.1.5
+contourpy==1.3.1
+cycler==0.12.1
+cymem==2.0.11
+distro==1.9.0
+dnspython==2.7.0
+et_xmlfile==2.0.0
+exceptiongroup==1.2.2
+filelock==3.16.1
+Flask==3.1.0
+flask-cors==5.0.1
+flatbuffers==24.3.25
+fonttools==4.56.0
+fsspec==2024.10.0
+gast==0.6.0
+google-pasta==0.2.0
+greenlet==3.2.1
+grpcio==1.68.0
+h11==0.14.0
+h5py==3.12.1
+httpcore==1.0.7
+httpx==0.27.2
+huggingface-hub==0.26.2
+idna==3.10
+itsdangerous==2.2.0
+Jinja2==3.1.4
+jiter==0.7.1
+joblib==1.4.2
+keras==3.6.0
+kiwisolver==1.4.8
+langcodes==3.5.0
+language_data==1.3.0
+libclang==18.1.1
+lxml==5.3.0
+marisa-trie==1.2.1
+Markdown==3.7
+markdown-it-py==3.0.0
+MarkupSafe==3.0.2
+matplotlib==3.10.0
+mdurl==0.1.2
+ml-dtypes==0.4.1
+mpmath==1.3.0
+mss==10.0.0
+murmurhash==1.0.12
+namex==0.0.8
+narwhals==1.36.0
+networkx==3.4.2
+numpy==2.0.2
+openai==1.55.0
+opencv-contrib-python==4.10.0.84
+opencv-python==4.10.0.84
+openpyxl==3.1.5
+opt_einsum==3.4.0
+optree==0.13.1
+packaging==24.2
+pandas==2.2.3
+pillow==11.1.0
+plotly==6.0.1
+preshed==3.0.9
+protobuf==5.28.3
+psutil==6.1.1
+psycopg2-binary==2.9.10
+pydantic==2.10.1
+pydantic_core==2.27.1
+pygame==2.6.1
+Pygments==2.18.0
+pymongo==4.12.0
+pyparsing==3.2.1
+pypdf==5.2.0
+python-dateutil==2.9.0.post0
+python-docx==1.1.2
+python-dotenv==1.1.0
+python-multipart==0.0.20
+pytz==2025.1
+PyYAML==6.0.2
+regex==2024.11.6
+requests==2.32.3
+rich==13.9.4
+safetensors==0.4.5
+scikit-fuzzy==0.5.0
+scikit-learn==1.5.2
+scipy==1.14.1
+seaborn==0.13.2
+sentence-transformers==4.1.0
+shellingham==1.5.4
+six==1.16.0
+smart-open==7.1.0
+sniffio==1.3.1
+spacy==3.8.5
+spacy-legacy==3.0.12
+spacy-loggers==1.0.5
+SQLAlchemy==2.0.40
+srsly==2.5.1
+sympy==1.13.1
+tensorboard==2.18.0
+tensorboard-data-server==0.7.2
+tensorflow==2.18.0
+tensorflow-io-gcs-filesystem==0.31.0
+tensorflow_intel==2.18.0
+termcolor==2.5.0
+textdistance==4.6.3
+tf_keras==2.18.0
+thinc==8.3.6
+threadpoolctl==3.5.0
+tokenizers==0.20.3
+torch==2.5.1
+tqdm==4.67.0
+transformers==4.46.3
+typer==0.15.2
+typing_extensions==4.12.2
+tzdata==2025.1
+urllib3==2.2.3
+wasabi==1.1.3
+weasel==0.4.1
+Werkzeug==3.1.3
+wrapt==1.17.0
+xlrd==2.0.1
