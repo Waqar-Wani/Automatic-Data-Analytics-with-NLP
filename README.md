@@ -1,4 +1,4 @@
-#Please add your own key for API
+# Please add your own key for API
 Visit openrouter.ai page and generate new key and the replace in 3 files (1. NLP_Routes, 2. OpenRouter_client and 3. testapi) and then run. Paste your new key in testapi file and test the api connection.
 
 # Automatic-Data-Analytics-with-NLP
