@@ -3,6 +3,9 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 from backend.utils.openrouter_client import call_openrouter_api
+from backend.data_preprocessing.filter_handler import get_global_filters, save_all_filters
+import json
+import re
 
 nlp_bp = Blueprint('nlp', __name__)
 
@@ -10,7 +13,7 @@ nlp_bp = Blueprint('nlp', __name__)
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 
 # Initialize OpenRouter client
 client = OpenAI(
@@ -47,49 +50,43 @@ def nlp_query():
     if df is None:
         return jsonify({'html': '<div class="alert alert-warning">Dataset not found. Please upload your dataset first.</div>'})
 
-    # Get basic dataset statistics
     row_count = len(df)
     col_count = len(df.columns)
     numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
     categorical_cols = df.select_dtypes(include=['object', 'category']).columns.tolist()
-    
-    # Convert dtypes to strings before joining
     schema = ', '.join([f'{col} ({str(dtype)})' for col, dtype in zip(df.columns, df.dtypes)])
-    
-    # Create messages array for the API call
+
+    # Stronger system prompt for valid JSON
     messages = [
         {
-            "role": "system",
-            "content": """You are a data analyst assistant. Your task is to analyze datasets and answer questions about them.
-            You should provide clear explanations, code when needed, and visualization suggestions.
-            When providing code, make sure to assign the result to a variable named 'result_df'."""
-        },
-        {
-            "role": "user",
-            "content": f"""Analyze this dataset and answer the user's question.
-
-Dataset Information:
-- Number of rows: {row_count}
-- Number of columns: {col_count}
-- Numeric columns: {', '.join(numeric_cols) if numeric_cols else 'None'}
-- Categorical columns: {', '.join(categorical_cols) if categorical_cols else 'None'}
-- Schema: {schema}
-
-User question: {query}
-
-Instructions:
-1. If the question requires data analysis, provide a pandas command to answer it
-2. If the question is about the dataset structure, provide a clear explanation
-3. If visualization would help, suggest an appropriate chart type
-4. Keep your response concise and focused on the question
-5. Always assign the result to a variable named 'result_df'
-
-Respond in this format:
-1. Analysis/Explanation: [Your analysis or explanation]
-2. Code (if needed): [Pandas command in a code block]
-3. Visualization Suggestion (if applicable): [Chart type and why it would be helpful]"""
-        }
+        "role": "system",
+        "content": (
+            "You are a data analyst assistant. Given a user's question, return a JSON array of filter conditions (not code) "
+            "that can be used to filter a pandas DataFrame. Each filter should be a JSON object with \"column\", \"operator\", and \"value\" keys. "
+            "Use only double quotes for all keys and string values, and use operators like '==', '!=', '>', '<', '>=', '<=', 'in', 'not in'. "
+            "Do not include any explanation or code, only the JSON array."
+        )
+    },
+    {
+        "role": "user",
+        "content": f"""Analyze this dataset and answer the user's question by returning a JSON array of filter conditions.\n\nDataset Information:\n- Number of rows: {row_count}\n- Number of columns: {col_count}\n- Numeric columns: {', '.join(numeric_cols) if numeric_cols else 'None'}\n- Categorical columns: {', '.join(categorical_cols) if categorical_cols else 'None'}\n- Schema: {schema}\n\nUser question: {query}\n\nRespond ONLY with the JSON array of filter conditions."""
+    }
     ]
+
+    def fix_stringified_filters(filters):
+        # If filters is a list of strings, try to convert each to a dict
+        fixed = []
+        for f in filters:
+            if isinstance(f, str):
+                # Replace single quotes with double quotes and fix operator if needed
+                f_fixed = f.replace("'", '"').replace('"equal"', '"=="').replace('equal', '==')
+                try:
+                    fixed.append(json.loads(f_fixed))
+                except Exception:
+                    continue
+            else:
+                fixed.append(f)
+        return fixed
 
     try:
         try:
@@ -98,89 +95,33 @@ Respond in this format:
             print(f"OpenRouter API error: {str(e)}")
             return jsonify({'html': parse_api_error_message(e)})
 
-        code = extract_code_from_response(ai_response)
-        filtered_data = None
-        
-        if code:
-            # Replace any potential data loading with our existing DataFrame
-            # Handle CSV files
-            for ext in ['csv', 'txt', 'dat']:
-                code = code.replace(f"pd.read_csv('data.{ext}')", "df")
-                code = code.replace(f"pd.read_csv('dataset.{ext}')", "df")
-                code = code.replace(f"pd.read_csv('file.{ext}')", "df")
-                code = code.replace(f"pd.read_csv('input.{ext}')", "df")
-            
-            # Handle Excel files
-            for ext in ['xlsx', 'xls']:
-                code = code.replace(f"pd.read_excel('data.{ext}')", "df")
-                code = code.replace(f"pd.read_excel('dataset.{ext}')", "df")
-                code = code.replace(f"pd.read_excel('file.{ext}')", "df")
-                code = code.replace(f"pd.read_excel('input.{ext}')", "df")
-            
-            # Handle JSON files
-            code = code.replace("pd.read_json('data.json')", "df")
-            code = code.replace("pd.read_json('dataset.json')", "df")
-            code = code.replace("pd.read_json('file.json')", "df")
-            code = code.replace("pd.read_json('input.json')", "df")
-            
-            # Handle variable-based loading
-            code = code.replace("pd.read_csv(csv_file)", "df")
-            code = code.replace("pd.read_excel(excel_file)", "df")
-            code = code.replace("pd.read_json(json_file)", "df")
-            code = code.replace("pd.read_csv(filename)", "df")
-            code = code.replace("pd.read_excel(filename)", "df")
-            code = code.replace("pd.read_json(filename)", "df")
-            
-            # Handle direct DataFrame creation
-            code = code.replace("pd.DataFrame(data)", "df")
-            code = code.replace("pd.DataFrame(dataset)", "df")
-            
-            local_vars = {'df': df}
+        # Extract JSON array from AI response
+        json_match = re.search(r'\[.*?\]', ai_response, re.DOTALL)
+        filter_json = json_match.group(0) if json_match else None
+        html = ""
+        if filter_json:
             try:
-                exec(code, {}, local_vars)
-                result_df = local_vars.get('result_df')
-                if result_df is not None:
-                    filtered_data = result_df.head(20).to_dict(orient='records')
-                
-                # Format the response with better styling
-                html = f"""
-                <div class="nlp-response">
-                    <div class="ai-analysis">
-                        <h4>AI Analysis</h4>
-                        <div class="analysis-content">{ai_response}</div>
-                    </div>
-                    <div class="execution-result">
-                        <h4>Result</h4>
-                        <div class="result-content">{result_df.head(5).to_string() if result_df is not None else 'No result variable found.'}</div>
-                    </div>
-                </div>"""
+                new_filters = json.loads(filter_json)
+                # Auto-fix if list of strings
+                if new_filters and isinstance(new_filters[0], str):
+                    new_filters = fix_stringified_filters(new_filters)
+                # Overwrite global filters with new filters
+                if isinstance(new_filters, dict):
+                    new_filters = [new_filters]
+                save_all_filters(new_filters)
+                html = f"<div class='alert alert-success'>Filter(s) set and will be applied to all data previews.<br>JSON: <pre>{json.dumps(new_filters, indent=2)}</pre></div>"
             except Exception as ex:
-                html = f"""
-                <div class="nlp-response">
-                    <div class="ai-analysis">
-                        <h4>AI Analysis</h4>
-                        <div class="analysis-content">{ai_response}</div>
-                    </div>
-                    <div class="execution-error">
-                        <h4>Error</h4>
-                        <div class="error-content">{str(ex)}</div>
-                    </div>
-                </div>"""
+                html = f"<div class='alert alert-danger'>Failed to parse filter JSON: {str(ex)}<br>AI response: <pre>{ai_response}</pre></div>"
         else:
-            html = f"""
-            <div class="nlp-response">
-                <div class="ai-analysis">
-                    <h4>AI Analysis</h4>
-                    <div class="analysis-content">{ai_response}</div>
-                </div>
-            </div>"""
+            html = f"<div class='alert alert-warning'>No valid JSON filter found in AI response.<br>AI response: <pre>{ai_response}</pre></div>"
+
+        return jsonify({
+            'html': html,
+            'filtered_data': None
+        })
     except Exception as e:
         html = parse_api_error_message(e)
-
-    return jsonify({
-        'html': html,
-        'filtered_data': filtered_data
-    })
+        return jsonify({'html': html, 'filtered_data': None})
 
 # Chatbot Test Page
 @nlp_bp.route('/chatbot_test')
@@ -249,7 +190,7 @@ def analyze_data():
         
         return jsonify({
             'response': response,
-            'model': 'mistralai/mistral-small-3.1-24b-instruct:free'
+            'model': 'qwen/qwen3-0.6b-04-28:free'
         })
         
     except Exception as e:

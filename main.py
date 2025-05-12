@@ -13,6 +13,7 @@ from backend.data_preprocessing.data_overview import generate_overview
 from backend.data_preprocessing.data_cache import get_cache, set_cache
 from backend.data_visualization.chart_generation import generate_chart
 from backend.nlp_routes import nlp_bp
+from backend.data_preprocessing.filter_handler import apply_filters, safe_query, get_global_filters, clear_all_filters
 
 # Initialize Flask app
 app = Flask(__name__, static_folder=os.path.join('backend', 'static'), template_folder=os.path.join('backend', 'templates'))
@@ -44,6 +45,9 @@ def upload():
         df = read_file(file)
         df = handle_missing_values(df)
         df = normalize_column_names(df)
+
+        # Clear all filters after each new upload
+        clear_all_filters()
 
         # Overview (handles all AI summary and error logic)
         overview = generate_overview(df, file_name, data_type, file_format)
@@ -129,7 +133,12 @@ def get_data(temp_id):
         length = int(request.args.get('length', 10))
         search_value = request.args.get('search[value]', '')
 
-        # Filtering
+        # --- Apply all global filters from filters.json automatically ---
+        filters = get_global_filters()
+        if filters:
+            df = safe_query(df, filters)
+
+        # Filtering (search)
         if search_value:
             df_filtered = df[df.apply(lambda row: row.astype(str).str.contains(search_value, case=False, na=False).any(), axis=1)]
         else:
@@ -182,6 +191,36 @@ def data_source():
 @app.route('/about-project')
 def about_project():
     return render_template('about_project.html')
+
+@app.route('/apply_filter_file', methods=['POST'])
+def apply_filter_file():
+    try:
+        filter_file = request.files['filter_file']
+        temp_id = request.form.get('temp_id')
+        
+        if not filter_file or not temp_id:
+            return jsonify({"error": "Missing filter file or dataset ID"}), 400
+            
+        # Get the dataset from cache
+        df = get_cache().get(temp_id)
+        if df is None:
+            return jsonify({"error": "Dataset not found"}), 404
+            
+        # Apply filters
+        filtered_df = apply_filters(df, filter_file)
+        
+        # Update the cache with filtered data
+        set_cache(temp_id, filtered_df)
+        
+        # Return success response
+        return jsonify({
+            "message": "Filter applied successfully",
+            "total_rows": len(filtered_df),
+            "preview": filtered_df.head(10).to_dict(orient='records')
+        })
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 app.register_blueprint(nlp_bp)
 
