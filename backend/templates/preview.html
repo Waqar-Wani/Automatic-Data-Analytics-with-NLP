@@ -286,7 +286,6 @@
         .then(response => response.json())
         .then(data => {
             document.getElementById('nlp-response').innerHTML = data.html;
-            
             // Update Data Preview table if filtered data is available
             if (data.filtered_data) {
                 var table = $('#data-table').DataTable();
@@ -294,6 +293,9 @@
                 table.rows.add(data.filtered_data);
                 table.draw();
             }
+            // Always reload DataTable after filter change
+            var table = $('#data-table').DataTable();
+            table.ajax.reload();
         });
     });
 </script>

@@ -13,7 +13,7 @@ from backend.data_preprocessing.data_overview import generate_overview
 from backend.data_preprocessing.data_cache import get_cache, set_cache
 from backend.data_visualization.chart_generation import generate_chart
 from backend.nlp_routes import nlp_bp
-from backend.data_preprocessing.filter_handler import apply_filters, safe_query, get_global_filters
+from backend.data_preprocessing.filter_handler import apply_filters, safe_query, get_global_filters, clear_all_filters
 
 # Initialize Flask app
 app = Flask(__name__, static_folder=os.path.join('backend', 'static'), template_folder=os.path.join('backend', 'templates'))
@@ -45,6 +45,9 @@ def upload():
         df = read_file(file)
         df = handle_missing_values(df)
         df = normalize_column_names(df)
+
+        # Clear all filters after each new upload
+        clear_all_filters()
 
         # Overview (handles all AI summary and error logic)
         overview = generate_overview(df, file_name, data_type, file_format)
