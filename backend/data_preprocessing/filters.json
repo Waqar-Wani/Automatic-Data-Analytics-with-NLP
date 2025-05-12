@@ -1,0 +1,4 @@
+[
+    { "column": "Sex", "operator": "==", "value": "female" },
+    { "column": "Age", "operator": "<", "value": 30 }
+  ]
