@@ -107,6 +107,16 @@
       </div>
     </form>
     <div id="nlp-response" class="mt-3"></div>
+    <div class="nlp-examples" style="margin-top: 18px;">
+      <strong>Example queries you can try:</strong>
+      <ul style="margin-top: 8px;">
+        <li>Show only rows where Age is less than 30</li>
+        <li>List all entries where Sex is female</li>
+        <li>Filter data for Region equal to North America</li>
+        <li>Show records where BMI is greater than 25 and Ethnicity is Asian</li>
+        <li>Display rows where Blood Pressure Systolic is above 120</li>
+      </ul>
+    </div>
 </div>
 <div class="preview-card">
     <h3>Data Preview</h3>
@@ -124,6 +134,23 @@
             </tbody>
         </table>
     </div>
+</div>
+<div class="review-section preview-card">
+  <h3>User Reviews</h3>
+  <form id="review-form" class="mb-3">
+    <div>
+      <input type="text" id="review-username" class="form-control" placeholder="Your Name *" required minlength="2">
+    </div>
+    <div>
+      <input type="text" id="review-position" class="form-control" placeholder="Your Position/Role (optional)" maxlength="50">
+    </div>
+    <div>
+      <textarea id="review-message" class="form-control" placeholder="Your Review (20-200 words)" rows="4" required></textarea>
+    </div>
+    <button type="submit" class="preview-btn">Post Review</button>
+    <div id="review-form-feedback" class="form-text"></div>
+  </form>
+  <div id="reviews-list"></div>
 </div>
 <!-- jQuery + DataTables -->
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -303,5 +330,66 @@
         var table = $('#data-table').DataTable();
         table.ajax.reload();
     });
+    function wordCount(str) {
+      return str.trim().split(/\s+/).length;
+    }
+    function renderReviews(reviews) {
+      const list = document.getElementById('reviews-list');
+      list.innerHTML = '';
+      reviews.forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'review-card';
+        card.innerHTML = `
+          <div class="review-meta">
+            <strong>${r.username}</strong>
+            ${r.position ? `<span>(${r.position})</span>` : ''}
+            <span class="review-date">${r.timestamp}</span>
+          </div>
+          <div class="review-message">${r.review.replace(/</g, '&lt;')}</div>
+        `;
+        list.appendChild(card);
+      });
+    }
+    function fetchReviews() {
+      fetch('/reviews')
+        .then(res => res.json())
+        .then(renderReviews);
+    }
+    document.getElementById('review-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const username = document.getElementById('review-username').value.trim();
+      const position = document.getElementById('review-position').value.trim();
+      const review = document.getElementById('review-message').value.trim();
+      const feedback = document.getElementById('review-form-feedback');
+      feedback.textContent = '';
+      let errors = [];
+      if (!username || username.length < 2) errors.push('Username must be at least 2 characters.');
+      if (position.length > 50) errors.push('Position/Role must be 50 characters or less.');
+      const wc = wordCount(review);
+      if (!review || wc < 20 || wc > 200) errors.push('Review must be between 20 and 200 words.');
+      if (errors.length) {
+        feedback.textContent = errors.join(' ');
+        feedback.style.color = 'red';
+        return;
+      }
+      fetch('/reviews', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({username, position, review})
+      })
+      .then(res => res.json().then(data => ({ok: res.ok, ...data})))
+      .then(data => {
+        if (data.success) {
+          feedback.textContent = data.message;
+          feedback.style.color = 'green';
+          this.reset();
+          fetchReviews();
+        } else {
+          feedback.textContent = (data.errors || ['Unknown error']).join(' ');
+          feedback.style.color = 'red';
+        }
+      });
+    });
+    fetchReviews();
 </script>
 {% endblock %}

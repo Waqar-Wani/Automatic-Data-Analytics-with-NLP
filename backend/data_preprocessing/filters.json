@@ -1,7 +1,7 @@
 [
   {
-    "column": "Region",
+    "column": "Program",
     "operator": "==",
-    "value": "Saudi Arabia"
+    "value": "Computer Science"
   }
 ]

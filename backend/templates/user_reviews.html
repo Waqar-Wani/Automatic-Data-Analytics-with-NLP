@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4" style="font-weight:600;">
+        What people Thinks <span style="color:#7c3aed;">About Us</span>
+    </h2>
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-md-12 col-12">
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-gradient" id="open-review-modal">Write a Review</button>
+            </div>
+            <!-- Modal for posting review -->
+            <div id="review-modal" class="modal-ui" style="display:none;">
+                <div class="modal-ui-content">
+                    <span class="modal-ui-close" id="close-review-modal">&times;</span>
+                    <h4 class="mb-2" style="font-weight:600;">Review this project</h4>
+                    <div class="mb-2 text-muted" style="font-size:1.04em;">Share your experience and help others!</div>
+                    <form id="review-form" class="mb-2">
+                        <div class="mb-2">
+                            <input type="text" id="review-username" class="form-control" placeholder="Your Name *" required minlength="2">
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" id="review-position" class="form-control" placeholder="Your Position/Role (optional)" maxlength="50">
+                        </div>
+                        <div class="mb-2">
+                            <label class="mb-1" style="font-weight:500;">Your Rating</label><br>
+                            <span id="star-rating" class="star-rating">
+                                <i class="star" data-value="1">&#9734;</i>
+                                <i class="star" data-value="2">&#9734;</i>
+                                <i class="star" data-value="3">&#9734;</i>
+                                <i class="star" data-value="4">&#9734;</i>
+                                <i class="star" data-value="5">&#9734;</i>
+                            </span>
+                        </div>
+                        <div class="mb-2">
+                            <label class="mb-1" style="font-weight:500;">Your Review</label>
+                            <textarea id="review-message" class="form-control" placeholder="Write your review (20-200 words)" rows="4" required></textarea>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2 mt-2">
+                            <button type="button" class="btn btn-light" id="cancel-review-modal">Cancel</button>
+                            <button type="submit" class="btn btn-gradient">Post review</button>
+                        </div>
+                        <div id="review-form-feedback" class="form-text mt-2"></div>
+                    </form>
+                </div>
+            </div>
+            <!-- Reviews Display -->
+            <div id="reviews-list" class="row g-4 justify-content-center"></div>
+            <div class="d-flex justify-content-center mt-4">
+                <button id="view-more-reviews" class="btn btn-gradient">View More</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function wordCount(str) {
+    return str.trim().split(/\s+/).length;
+}
+function getInitials(name) {
+    return name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+}
+function truncateText(text, maxLength) {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+}
+const STAR_ICON = '<svg width="18" height="18" fill="#fbbf24" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.175c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.38-2.454a1 1 0 00-1.175 0l-3.38 2.454c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.05 9.394c-.783-.57-.38-1.81.588-1.81h4.175a1 1 0 00.95-.69l1.286-3.967z"/></svg>';
+
+let reviewsData = [];
+let reviewsPage = 1;
+const REVIEWS_PER_PAGE = 3;
+
+function renderReviews(reviews, page=1) {
+    const list = document.getElementById('reviews-list');
+    list.innerHTML = '';
+    if (reviews.length === 0) {
+        list.innerHTML = '<div class="text-center text-muted">No reviews yet. Be the first to share your experience!</div>';
+        return;
+    }
+    const start = (page-1)*REVIEWS_PER_PAGE;
+    const end = start + REVIEWS_PER_PAGE;
+    reviews.slice(start, end).forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'col-md-4 col-12';
+        card.innerHTML = `
+            <div class="review-ui-card h-100 d-flex flex-column">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="review-ui-avatar me-2">
+                        <div class="avatar-circle-ui">${getInitials(r.username)}</div>
+                    </div>
+                    <div>
+                        <div class="review-ui-username">${r.username}</div>
+                        <div class="review-ui-rating">${STAR_ICON} <span>${r.rating ? r.rating.toFixed(1) : '4.0'}</span></div>
+                    </div>
+                </div>
+                <div class="review-ui-message flex-grow-1">${truncateText(r.review.replace(/</g, '&lt;'), 110)}</div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <span class="review-ui-date">${r.timestamp}</span>
+                    <a href="#" class="review-ui-explore">Explore More &nbsp; <span style="font-size:1.1em;">&#9654;</span></a>
+                </div>
+            </div>
+        `;
+        list.appendChild(card);
+    });
+    document.getElementById('view-more-reviews').style.display = (end < reviews.length) ? 'inline-block' : 'none';
+}
+function fetchReviews() {
+    fetch('/reviews')
+        .then(res => res.json())
+        .then(data => {
+            reviewsData = data;
+            reviewsPage = 1;
+            renderReviews(reviewsData, reviewsPage);
+        })
+        .catch(error => {
+            console.error('Error fetching reviews:', error);
+            document.getElementById('reviews-list').innerHTML = 
+                '<div class="alert alert-danger">Error loading reviews. Please try again later.</div>';
+        });
+}
+document.getElementById('view-more-reviews').addEventListener('click', function() {
+    reviewsPage++;
+    renderReviews(reviewsData, reviewsPage);
+});
+
+document.getElementById('open-review-modal').onclick = function() {
+    document.getElementById('review-modal').style.display = 'block';
+}
+document.getElementById('close-review-modal').onclick = function() {
+    document.getElementById('review-modal').style.display = 'none';
+}
+document.getElementById('cancel-review-modal').onclick = function() {
+    document.getElementById('review-modal').style.display = 'none';
+}
+
+// Star rating logic
+let selectedRating = 4;
+const stars = document.querySelectorAll('#star-rating .star');
+stars.forEach(star => {
+    star.addEventListener('mouseover', function() {
+        const val = parseInt(this.getAttribute('data-value'));
+        highlightStars(val);
+    });
+    star.addEventListener('mouseout', function() {
+        highlightStars(selectedRating);
+    });
+    star.addEventListener('click', function() {
+        selectedRating = parseInt(this.getAttribute('data-value'));
+        highlightStars(selectedRating);
+    });
+});
+function highlightStars(rating) {
+    stars.forEach(star => {
+        if (parseInt(star.getAttribute('data-value')) <= rating) {
+            star.innerHTML = '&#9733;';
+            star.style.color = '#fbbf24';
+        } else {
+            star.innerHTML = '&#9734;';
+            star.style.color = '#bbb';
+        }
+    });
+}
+highlightStars(selectedRating);
+
+document.getElementById('review-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const username = document.getElementById('review-username').value.trim();
+    const position = document.getElementById('review-position').value.trim();
+    const review = document.getElementById('review-message').value.trim();
+    const feedback = document.getElementById('review-form-feedback');
+    feedback.textContent = '';
+    let errors = [];
+    if (!username || username.length < 2) errors.push('Username must be at least 2 characters.');
+    if (position.length > 50) errors.push('Position/Role must be 50 characters or less.');
+    const wc = wordCount(review);
+    if (!review || wc < 20 || wc > 200) errors.push('Review must be between 20 and 200 words.');
+    if (errors.length) {
+        feedback.textContent = errors.join(' ');
+        feedback.style.color = 'red';
+        return;
+    }
+    fetch('/reviews', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({username, position, review, rating: selectedRating})
+    })
+    .then(res => res.json().then(data => ({ok: res.ok, ...data})))
+    .then(data => {
+        if (data.success) {
+            feedback.textContent = data.message;
+            feedback.style.color = 'green';
+            this.reset();
+            selectedRating = 4;
+            highlightStars(selectedRating);
+            setTimeout(() => {
+                document.getElementById('review-modal').style.display = 'none';
+                feedback.textContent = '';
+            }, 900);
+            fetchReviews();
+        } else {
+            feedback.textContent = (data.errors || ['Unknown error']).join(' ');
+            feedback.style.color = 'red';
+        }
+    })
+    .catch(error => {
+        console.error('Error posting review:', error);
+        feedback.textContent = 'Error posting review. Please try again later.';
+        feedback.style.color = 'red';
+    });
+});
+document.addEventListener('DOMContentLoaded', fetchReviews);
+</script>
+
+<style>
+.modal-ui {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.18);
+    justify-content: center;
+    align-items: center;
+}
+.modal-ui-content {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(124,58,237,0.13);
+    padding: 2.2rem 2.2rem 1.5rem 2.2rem;
+    max-width: 420px;
+    margin: 60px auto;
+    position: relative;
+}
+.modal-ui-close {
+    position: absolute;
+    top: 16px; right: 18px;
+    font-size: 1.5em;
+    color: #bbb;
+    cursor: pointer;
+    font-weight: 600;
+}
+.star-rating .star {
+    font-size: 2.1em;
+    color: #bbb;
+    cursor: pointer;
+    transition: color 0.15s;
+    margin-right: 2px;
+}
+.star-rating .star:hover,
+.star-rating .star.selected {
+    color: #fbbf24;
+}
+.btn-gradient {
+    background: linear-gradient(90deg, #7c3aed 60%, #00bcd4 100%);
+    color: #fff;
+    border: none;
+    border-radius: 24px;
+    padding: 0.7rem 2.2rem;
+    font-weight: 600;
+    font-size: 1.1em;
+    box-shadow: 0 2px 8px 0 rgba(124,58,237,0.10);
+    transition: background 0.2s;
+}
+.btn-gradient:hover {
+    background: linear-gradient(90deg, #00bcd4 60%, #7c3aed 100%);
+    color: #fff;
+}
+.review-ui-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px 0 rgba(0,0,0,0.10);
+    padding: 1.5rem 1.3rem 1.2rem 1.3rem;
+    margin-bottom: 1.2rem;
+    min-height: 260px;
+    transition: box-shadow 0.2s;
+}
+.review-ui-card:hover {
+    box-shadow: 0 8px 32px 0 rgba(124,58,237,0.13);
+}
+.review-ui-avatar .avatar-circle-ui {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00bcd4 60%, #7c3aed 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px 0 rgba(0,188,212,0.10);
+}
+.review-ui-username {
+    font-weight: 600;
+    font-size: 1.08em;
+    color: #222;
+}
+.review-ui-rating {
+    color: #fbbf24;
+    font-size: 1.01em;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+.review-ui-message {
+    color: #444;
+    font-size: 1.07em;
+    margin-top: 0.5rem;
+    margin-bottom: 0.7rem;
+    min-height: 60px;
+}
+.review-ui-date {
+    color: #bdbdbd;
+    font-size: 0.97em;
+    font-weight: 400;
+}
+.review-ui-explore {
+    color: #7c3aed;
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 1.01em;
+    transition: color 0.15s;
+}
+.review-ui-explore:hover {
+    color: #00bcd4;
+    text-decoration: underline;
+}
+@media (max-width: 900px) {
+    .review-ui-card { min-height: 220px; }
+}
+@media (max-width: 600px) {
+    .modal-ui-content { padding: 1.1rem 0.7rem; }
+    .review-ui-card { min-height: 180px; padding: 1rem 0.7rem; }
+    .review-ui-avatar .avatar-circle-ui { width: 36px; height: 36px; font-size: 1.05rem; }
+}
+</style>
+{% endblock %} 

@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 import pandas as pd
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
 
@@ -15,9 +15,13 @@ from backend.data_visualization.chart_generation import generate_chart
 from backend.nlp_routes import nlp_bp
 from backend.data_preprocessing.filter_handler import apply_filters, safe_query, get_global_filters, clear_all_filters, update_filtered_cache
 from backend.data_preprocessing.filtered_cache import get_filtered_cache, set_filtered_cache, clear_filtered_cache
+from backend.models import db, UserReview
+from backend.reviews import reviews_bp
 
 # Initialize Flask app
 app = Flask(__name__, static_folder=os.path.join('backend', 'static'), template_folder=os.path.join('backend', 'templates'))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///reviews.db'
+db.init_app(app)
 
 # Enable CORS for all routes
 CORS(app)
@@ -221,7 +225,14 @@ def apply_filter_file():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+@app.route('/user-reviews')
+def user_reviews():
+    return render_template('user_reviews.html')
+
 app.register_blueprint(nlp_bp)
+app.register_blueprint(reviews_bp)
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(host='0.0.0.0', port=5001, debug=True)
