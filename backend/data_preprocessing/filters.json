@@ -1,4 +1,7 @@
 [
-    { "column": "Sex", "operator": "==", "value": "female" },
-    { "column": "Age", "operator": "<", "value": 30 }
-  ]
+  {
+    "column": "Region",
+    "operator": "==",
+    "value": "Saudi Arabia"
+  }
+]

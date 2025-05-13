@@ -13,7 +13,8 @@ from backend.data_preprocessing.data_overview import generate_overview
 from backend.data_preprocessing.data_cache import get_cache, set_cache
 from backend.data_visualization.chart_generation import generate_chart
 from backend.nlp_routes import nlp_bp
-from backend.data_preprocessing.filter_handler import apply_filters, safe_query, get_global_filters, clear_all_filters
+from backend.data_preprocessing.filter_handler import apply_filters, safe_query, get_global_filters, clear_all_filters, update_filtered_cache
+from backend.data_preprocessing.filtered_cache import get_filtered_cache, set_filtered_cache, clear_filtered_cache
 
 # Initialize Flask app
 app = Flask(__name__, static_folder=os.path.join('backend', 'static'), template_folder=os.path.join('backend', 'templates'))
@@ -46,8 +47,9 @@ def upload():
         df = handle_missing_values(df)
         df = normalize_column_names(df)
 
-        # Clear all filters after each new upload
+        # Clear all filters and filtered cache after each new upload
         clear_all_filters()
+        clear_filtered_cache()
 
         # Overview (handles all AI summary and error logic)
         overview = generate_overview(df, file_name, data_type, file_format)
@@ -57,6 +59,7 @@ def upload():
         # Store DataFrame temporarily
         temp_id = str(len(get_cache()) + 1)
         set_cache(temp_id, df)
+        update_filtered_cache(temp_id)
 
         # Render HTML table
         html_table = df.to_html(index=False, classes='display nowrap', border=0)
@@ -88,7 +91,8 @@ def dashboard():
         if not all([x_column, y_column, temp_id]) or len(y_column) == 0:
             return "Missing required parameters. Please select both X and Y columns."
 
-        df = get_cache().get(temp_id)
+        # Use filtered cache for graph generation
+        df = get_filtered_cache().get(temp_id)
         if df is None:
             return "Session expired or dataset not found."
 
@@ -119,7 +123,7 @@ def dashboard():
 @app.route('/data/<temp_id>')
 @cross_origin()
 def get_data(temp_id):
-    df = get_cache().get(temp_id)
+    df = get_filtered_cache().get(temp_id)
     if df is None:
         return jsonify({
             'draw': int(request.args.get('draw', 1)),
@@ -132,11 +136,6 @@ def get_data(temp_id):
         start = int(request.args.get('start', 0))
         length = int(request.args.get('length', 10))
         search_value = request.args.get('search[value]', '')
-
-        # --- Apply all global filters from filters.json automatically ---
-        filters = get_global_filters()
-        if filters:
-            df = safe_query(df, filters)
 
         # Filtering (search)
         if search_value:
