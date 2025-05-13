@@ -111,6 +111,7 @@
 <div class="preview-card">
     <h3>Data Preview</h3>
     <div class="data-container">
+        <button id="refresh-preview-btn" class="preview-btn" style="margin-bottom: 10px;">Refresh Data Preview</button>
         <table id="data-table" class="display nowrap table table-bordered" style="width:100%">
             <thead>
                 <tr>
@@ -297,6 +298,10 @@
             var table = $('#data-table').DataTable();
             table.ajax.reload();
         });
+    });
+    document.getElementById('refresh-preview-btn').addEventListener('click', function() {
+        var table = $('#data-table').DataTable();
+        table.ajax.reload();
     });
 </script>
 {% endblock %}

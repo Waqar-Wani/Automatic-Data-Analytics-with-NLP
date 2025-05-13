@@ -3,7 +3,7 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 from backend.utils.openrouter_client import call_openrouter_api
-from backend.data_preprocessing.filter_handler import get_global_filters, save_all_filters
+from backend.data_preprocessing.filter_handler import get_global_filters, save_all_filters, update_filtered_cache
 import json
 import re
 
@@ -13,7 +13,7 @@ nlp_bp = Blueprint('nlp', __name__)
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 
 # Initialize OpenRouter client
 client = OpenAI(
@@ -109,6 +109,7 @@ def nlp_query():
                 if isinstance(new_filters, dict):
                     new_filters = [new_filters]
                 save_all_filters(new_filters)
+                update_filtered_cache(temp_id)
                 html = f"<div class='alert alert-success'>Filter(s) set and will be applied to all data previews.<br>JSON: <pre>{json.dumps(new_filters, indent=2)}</pre></div>"
             except Exception as ex:
                 html = f"<div class='alert alert-danger'>Failed to parse filter JSON: {str(ex)}<br>AI response: <pre>{ai_response}</pre></div>"
@@ -135,7 +136,7 @@ def chatbot_test_api():
     query = data['query']
     message_history = data.get('message_history', [])
     # Hardcoded max_tokens value
-    max_tokens = 2000
+    max_tokens = 500
     
     # Prepare the messages array with conversation history
     messages = []

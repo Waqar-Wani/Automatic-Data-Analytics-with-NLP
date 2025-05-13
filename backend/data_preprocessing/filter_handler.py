@@ -2,6 +2,8 @@ import pandas as pd
 import json
 import os
 from typing import List, Dict, Any
+from backend.data_preprocessing.data_cache import get_cache
+from backend.data_preprocessing.filtered_cache import set_filtered_cache
 
 # Define the filters file path
 FILTERS_FILE = os.path.join(os.path.dirname(__file__), 'filters.json')
@@ -146,4 +148,14 @@ def clear_all_filters():
     """
     Clear all filters (global).
     """
-    save_all_filters([]) 
+    save_all_filters([])
+
+def update_filtered_cache(temp_id):
+    """
+    Update the filtered cache for a given temp_id by applying current filters to the original dataset.
+    """
+    df = get_cache().get(temp_id)
+    filters = get_global_filters()
+    if df is not None:
+        filtered_df = safe_query(df, filters) if filters else df
+        set_filtered_cache(temp_id, filtered_df) 
