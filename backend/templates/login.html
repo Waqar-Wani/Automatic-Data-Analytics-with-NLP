@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container login-container">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card login-card">
+                <h3 class="login-title">Login</h3>
+                <form id="login-form" class="login-form" novalidate>
+                    <div class="mb-3">
+                        <label for="login-username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="login-username" name="username" required minlength="3">
+                    </div>
+                    <div class="mb-3">
+                        <label for="login-password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="login-password" name="password" required minlength="8">
+                    </div>
+                    <div id="login-error" class="login-error"></div>
+                    <button type="submit" class="btn btn-gradient w-100">Login</button>
+                </form>
+                <div class="login-register-link">
+                    <a href="/register">Don't have an account? Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+{% endblock %} 

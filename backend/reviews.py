@@ -1,5 +1,5 @@
-from flask import Blueprint, request, jsonify
-from .models import db, UserReview
+from flask import Blueprint, request, jsonify, render_template
+from backend.models import db, UserReview
 import re
 
 def word_count(text):

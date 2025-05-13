@@ -3,9 +3,11 @@ import os
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 import pandas as pd
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory, session, redirect, url_for, g
 from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
+import requests
+from functools import wraps
 
 from backend.data_preprocessing.file_processing import read_file
 from backend.data_preprocessing.data_cleaning import handle_missing_values, normalize_column_names
@@ -15,18 +17,58 @@ from backend.data_visualization.chart_generation import generate_chart
 from backend.nlp_routes import nlp_bp
 from backend.data_preprocessing.filter_handler import apply_filters, safe_query, get_global_filters, clear_all_filters, update_filtered_cache
 from backend.data_preprocessing.filtered_cache import get_filtered_cache, set_filtered_cache, clear_filtered_cache
-from backend.models import db, UserReview
+from backend.models import db, UserReview, User
 from backend.reviews import reviews_bp
+from backend.auth_routes import auth_bp
 
 # Initialize Flask app
 app = Flask(__name__, static_folder=os.path.join('backend', 'static'), template_folder=os.path.join('backend', 'templates'))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///reviews.db'
 db.init_app(app)
 
+# Register blueprints
+app.register_blueprint(nlp_bp)
+app.register_blueprint(reviews_bp)
+app.register_blueprint(auth_bp)
+
 # Enable CORS for all routes
 CORS(app)
 
 load_dotenv()
+
+PHP_SESSION_CHECK_URL = 'http://localhost/php_auth/session_check.php'  # Adjust if needed
+
+def get_php_user():
+    # Try to get session cookie from Flask request
+    cookies = request.cookies
+    try:
+        resp = requests.get(PHP_SESSION_CHECK_URL, cookies=cookies, timeout=2)
+        data = resp.json()
+        if data.get('logged_in'):
+            return data
+    except Exception as e:
+        print('PHP session check failed:', e)
+    return None
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        user = get_php_user()
+        if not user:
+            return redirect(url_for('index'))
+        g.user = user
+        return f(*args, **kwargs)
+    return decorated_function
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        user = get_php_user()
+        if not user or user.get('role') != 'admin':
+            return redirect(url_for('index'))
+        g.user = user
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route('/')
 def index():
@@ -81,6 +123,7 @@ def upload():
         return f"Error reading file: {error_msg}"
 
 @app.route('/dashboard', methods=['POST'])
+@login_required
 def dashboard():
     try:
         x_column = request.form.get('x_column')
@@ -229,8 +272,11 @@ def apply_filter_file():
 def user_reviews():
     return render_template('user_reviews.html')
 
-app.register_blueprint(nlp_bp)
-app.register_blueprint(reviews_bp)
+@app.route('/admin-panel')
+@admin_required
+def admin_panel():
+    # ... admin-only code ...
+    pass
 
 if __name__ == '__main__':
     with app.app_context():

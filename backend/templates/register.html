@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container login-container">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card login-card">
+                <h3 class="login-title">Register</h3>
+                <form id="register-form" class="login-form" novalidate>
+                    <div class="mb-3">
+                        <label for="register-username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="register-username" name="username" required minlength="3">
+                    </div>
+                    <div class="mb-3">
+                        <label for="register-email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="register-email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="register-password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="register-password" name="password" required minlength="8">
+                    </div>
+                    <div class="mb-3">
+                        <label for="register-position" class="form-label">Position/Role (optional)</label>
+                        <input type="text" class="form-control" id="register-position" name="position" maxlength="50">
+                    </div>
+                    <div id="register-error" class="login-error"></div>
+                    <button type="submit" class="btn btn-gradient w-100">Register</button>
+                </form>
+                <div class="login-register-link">
+                    <a href="/login">Already have an account? Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('register-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const username = document.getElementById('register-username').value.trim();
+    const email = document.getElementById('register-email').value.trim();
+    const password = document.getElementById('register-password').value;
+    const position = document.getElementById('register-position').value.trim();
+    const errorDiv = document.getElementById('register-error');
+    
+    errorDiv.textContent = '';
+    
+    // Client-side validation
+    if (!username || username.length < 3) {
+        errorDiv.textContent = 'Username must be at least 3 characters.';
+        return;
+    }
+    if (!email || !email.includes('@')) {
+        errorDiv.textContent = 'Please enter a valid email address.';
+        return;
+    }
+    if (!password || password.length < 8) {
+        errorDiv.textContent = 'Password must be at least 8 characters.';
+        return;
+    }
+    
+    // Send registration request
+    fetch('/php_auth/register.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&position=${encodeURIComponent(position)}`
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/login';
+        } else {
+            errorDiv.textContent = (data.errors || ['Registration failed']).join(' ');
+        }
+    })
+    .catch(() => {
+        errorDiv.textContent = 'Registration failed. Please try again.';
+    });
+});
+</script>
+{% endblock %} 
