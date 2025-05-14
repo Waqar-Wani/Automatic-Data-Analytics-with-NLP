@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, render_template
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
-from backend.utils.openrouter_client import call_openrouter_api
+from backend.utils.openrouter_client import call_openrouter_api, MODEL_NAME
 from backend.data_preprocessing.filter_handler import get_global_filters, save_all_filters, update_filtered_cache
 import json
 import re
@@ -13,7 +13,7 @@ nlp_bp = Blueprint('nlp', __name__)
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = os.getenv("API_KEY")
 
 # Initialize OpenRouter client
 client = OpenAI(
@@ -191,7 +191,7 @@ def analyze_data():
         
         return jsonify({
             'response': response,
-            'model': 'qwen/qwen3-0.6b-04-28:free'
+            'model': MODEL_NAME
         })
         
     except Exception as e:
