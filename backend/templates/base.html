@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/static/css/common.css">
     {% block head %}{% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
     <header>
         <div class="logo"><i class="fas fa-database"></i> AI-Powered Data Analytics</div>
         <nav>
@@ -18,6 +18,7 @@
             <a href="#">Machine Learning Tools</a>
             <a href="/chatbot_test">Data Analytics Chatbot</a>
             <a href="/about-project">About Project AI</a>
+            <a href="/project-authors">Project Authors</a>
             <a href="/user-reviews">User Reviews</a>
         </nav>
     </header>

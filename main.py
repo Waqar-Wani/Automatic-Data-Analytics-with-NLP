@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 import pandas as pd
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory, make_response
 from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
 
@@ -30,7 +30,13 @@ load_dotenv()
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    excel_path = os.path.join(app.static_folder, 'UserReviews.xlsx')
+    if os.path.exists(excel_path):
+        df = pd.read_excel(excel_path)
+        reviews = df.to_dict(orient='records')
+    else:
+        reviews = []
+    return render_template('index.html', reviews=reviews)
 
 @app.route('/upload', methods=['GET'])
 def upload_form():
@@ -225,9 +231,52 @@ def apply_filter_file():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-@app.route('/user-reviews')
+@app.route('/user-reviews', methods=['GET', 'POST'])
 def user_reviews():
-    return render_template('user_reviews.html')
+    excel_path = os.path.join(app.static_folder, 'UserReviews.xlsx')
+    if request.method == 'POST':
+        data = request.get_json()
+        name = data.get('name', '').strip()
+        rating = int(data.get('rating', 0))
+        review = data.get('review', '').strip()
+        if not name or not review or not (1 <= rating <= 5):
+            return jsonify({'success': False, 'error': 'Invalid input'}), 400
+        # Append to Excel
+        if os.path.exists(excel_path):
+            df = pd.read_excel(excel_path)
+        else:
+            df = pd.DataFrame(columns=['Name', 'Rating', 'Review'])
+        df = pd.concat([df, pd.DataFrame([{'Name': name, 'Rating': rating, 'Review': review}])], ignore_index=True)
+        df.to_excel(excel_path, index=False)
+        return jsonify({'success': True})
+    else:
+        # GET: read all reviews
+        if os.path.exists(excel_path):
+            df = pd.read_excel(excel_path)
+            reviews = df.to_dict(orient='records')
+        else:
+            reviews = []
+        return render_template('user_reviews.html', reviews=reviews)
+
+@app.route('/project-authors')
+def project_authors():
+    # Path to the Excel file
+    excel_path = os.path.join(app.static_folder, 'ProjectAuthorsTemplate.xlsx')
+    # Read the Excel file
+    df_authors = pd.read_excel(excel_path, sheet_name='Authors')
+    df_contributors = pd.read_excel(excel_path, sheet_name='Contributors')
+
+    # Convert NaN to empty string for safe rendering
+    authors = df_authors.fillna('').to_dict(orient='records')
+    contributors = df_contributors.fillna('').to_dict(orient='records')
+
+    # Create response object
+    response = make_response(render_template('project_authors.html', authors=authors, contributors=contributors))
+    # Disable caching
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 app.register_blueprint(nlp_bp)
 app.register_blueprint(reviews_bp)

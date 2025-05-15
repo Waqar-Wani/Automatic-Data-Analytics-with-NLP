@@ -1,0 +1,14 @@
+[Excel Template]
+Sheet: Authors
+| Name                  | PhotoFilename     | Bio                                              | Role                        | LinkedIn         | GitHub         | Portfolio      |
+|-----------------------|------------------|--------------------------------------------------|-----------------------------|------------------|---------------|---------------|
+| Waqar Maqbool Wani    | waqar.jpg        | Lead developer and designer.                     | Lead Developer & Designer   | linkedin.com/... | github.com/... | waqar.com     |
+| Inshpreet Kour Mehta  | inshpreet.jpg    | Data specialist and co-developer.                | Co-Developer & Data Specialist | linkedin.com/... | github.com/... |               |
+
+Sheet: Contributors
+| Name             | PhotoFilename      | Bio                                   | ContributionType   | GitHub         | OtherLink       |
+|------------------|-------------------|---------------------------------------|--------------------|---------------|----------------|
+| Contributor One  | contributor1.jpg   | Helped with charting features.        | Feature Development| github.com/... |                |
+| Contributor Two  |                   | Improved documentation.               | Documentation      | github.com/... |                |
+
+</rewritten_file> 

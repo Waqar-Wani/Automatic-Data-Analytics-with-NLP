@@ -1,8 +1,13 @@
 /* Common header and footer styles for DataPulse Analytics */
+html, body {
+    height: 100%;
+}
 body {
     font-family: 'Roboto', sans-serif;
     background: linear-gradient(120deg, #00f0ff 0%, #ff69b4 50%, #8e54e9 100%);
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 header {
     background: #23272f;
@@ -41,7 +46,8 @@ footer {
     text-align: center;
     padding: 20px;
     font-size: 16px;
-    margin-top: 40px;
+    margin-top: auto;
+    width: 100%;
 }
 .container {
     max-width: 600px;
@@ -177,4 +183,47 @@ footer {
 @media (max-width: 700px) {
     .option-cards { flex-direction: column; align-items: center; }
     .container { margin: 30px 8px 0 8px; }
+}
+.index-reviews-section {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    padding: 32px 28px 28px 28px;
+    margin: 40px auto;
+    max-width: 900px;
+    width: 100%;
+    text-align: center;
+}
+.index-reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 18px;
+}
+.index-review-card {
+    background: #f5faff;
+    border-radius: 10px;
+    padding: 18px 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.index-review-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    justify-content: center;
+    margin-bottom: 6px;
+}
+.index-review-name {
+    font-weight: 600;
+    color: #003366;
+}
+.index-review-rating {
+    color: #fbbf24;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+.index-review-text {
+    color: #444;
+    font-size: 1rem;
+    text-align: justify;
 } 

@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = os.getenv("API_KEY")
+OPENROUTER_API_KEY = "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"
 #OPENROUTER_API_KEY = "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"
 
 

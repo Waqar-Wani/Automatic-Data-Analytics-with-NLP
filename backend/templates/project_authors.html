@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Project Authors | DataPulse Analytics{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/static/css/project_authors.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="authors-main-container">
+    <!-- Authors Section -->
+    <section class="authors-section-card">
+        <h2><i class="fas fa-users icon"></i> Authors</h2>
+        <div class="authors-list">
+            {% for author in authors %}
+            <div class="author-card">
+                <img src="{{ url_for('static', filename='photos/' ~ author.PhotoFilename) }}" alt="{{ author.Name }}" class="author-photo">
+                <div class="author-info">
+                    <h3>{{ author.Name }}</h3>
+                    <p class="author-role">{{ author.Role }}</p>
+                    <p class="author-bio">{{ author.Bio }}</p>
+                    <div class="author-links">
+                        {% if author.LinkedIn and author.LinkedIn != '' %}
+                        <a href="{{ author.LinkedIn }}" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        {% endif %}
+                        {% if author.GitHub and author.GitHub != '' %}
+                        <a href="{{ author.GitHub }}" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+                        {% endif %}
+                        {% if author.Portfolio and author.Portfolio != '' %}
+                        <a href="{{ author.Portfolio }}" target="_blank" title="Portfolio"><i class="fas fa-globe"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    <!-- Contributors Section -->
+    <section class="contributors-section-card">
+        <h2><i class="fas fa-hands-helping icon"></i> Contributors</h2>
+        <div class="contributors-list">
+            {% for contributor in contributors %}
+            <div class="contributor-card">
+                {% if contributor.PhotoFilename and contributor.PhotoFilename != '' %}
+                <img src="{{ url_for('static', filename='photos/' ~ contributor.PhotoFilename) }}" alt="{{ contributor.Name }}" class="contributor-photo">
+                {% endif %}
+                <div class="contributor-info">
+                    <h3>{{ contributor.Name }}</h3>
+                    <p class="contributor-role">{{ contributor.Role }}</p>
+                    <p class="contributor-bio">{{ contributor.Bio }}</p>
+                    <div class="contributor-links">
+                        {% if contributor.GitHub and contributor.GitHub != '' %}
+                        <a href="{{ contributor.GitHub }}" target="_blank" title="GitHub"><i class="fab fa-linkedin"></i></a>
+                        {% endif %}
+                        {% if contributor.OtherLink and contributor.OtherLink != '' %}
+                        <a href="{{ contributor.OtherLink }}" target="_blank" title="Other Link"><i class="fas fa-link"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+<script src="/static/js/project_authors.js"></script>
+{% endblock %} 

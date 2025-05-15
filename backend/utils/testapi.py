@@ -2,7 +2,7 @@ from openai import OpenAI
 
 client = OpenAI(
   base_url="https://openrouter.ai/api/v1",
-  api_key="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",
+  api_key="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",
 )
 
 completion = client.chat.completions.create(
