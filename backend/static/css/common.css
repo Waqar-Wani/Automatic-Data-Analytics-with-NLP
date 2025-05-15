@@ -1,13 +1,17 @@
 /* Common header and footer styles for DataPulse Analytics */
 html, body {
+    min-height: 100vh;
     height: 100%;
 }
 body {
     font-family: 'Roboto', sans-serif;
-    background: linear-gradient(120deg, #00f0ff 0%, #ff69b4 50%, #8e54e9 100%);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background: linear-gradient(135deg, #6ee7f7 0%, #a7bfff 50%, #fbc2eb 100%);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 header {
     background: #23272f;
@@ -118,7 +122,7 @@ footer {
     background: linear-gradient(135deg, #00f0ff 0%, #ff69b4 100%);
     color: #fff;
     border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    box-shadow: 0 4px 16px rgba(0,0,0,0);
     padding: 32px 20px 24px 20px;
     margin-bottom: 20px;
 }
@@ -187,7 +191,7 @@ footer {
 .index-reviews-section {
     background: #fff;
     border-radius: 16px;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    box-shadow: 0 2px 16px rgba(0,0,0,0);
     padding: 32px 28px 28px 28px;
     margin: 40px auto;
     max-width: 900px;
@@ -204,7 +208,7 @@ footer {
     background: #f5faff;
     border-radius: 10px;
     padding: 18px 14px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0,0,0,0);
 }
 .index-review-header {
     display: flex;
@@ -226,4 +230,18 @@ footer {
     color: #444;
     font-size: 1rem;
     text-align: justify;
+}
+.features {
+    background: none;
+    border-radius: 24px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0);
+    padding: 40px 0;
+    margin: 40px 0;
+}
+.reviews-main-container {
+    background: none;
+    border-radius: 24px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0);
+    padding: 40px 0;
+    margin: 40px 0;
 } 
