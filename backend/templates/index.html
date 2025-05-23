@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Home | DataPulse Analytics{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="/static/css/user_reviews.css">
+    {{ super() }}
+{% endblock %}
+{% block body_class %}home-page{% endblock %}
 {% block content %}
 <style>
 .hero {
@@ -105,6 +110,18 @@
         <p>Connect to live APIs, fetch real-time data, and analyze it instantly with our platform's powerful tools.</p>
     </div>
 </section>
+<section class="review-section-card">
+    <h2><i class="fas fa-comments icon"></i> User Reviews</h2>
+    <div class="reviews-carousel">
+        <button class="carousel-arrow left" aria-label="Scroll left"><i class="fas fa-chevron-left"></i></button>
+        <div class="reviews-list" id="reviews-list" data-reviews='{{ reviews|tojson|safe }}'>
+            <!-- Reviews will be rendered by JS -->
+        </div>
+        <button class="carousel-arrow right" aria-label="Scroll right"><i class="fas fa-chevron-right"></i></button>
+    </div>
+</section>
+<script src="/static/js/user_reviews.js"></script>
+<script src="/static/js/index_reviews.js"></script>
 <script>
     // Animated cursor
     const cursor = document.getElementById('cursor');

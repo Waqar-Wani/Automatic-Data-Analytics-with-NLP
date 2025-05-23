@@ -17,46 +17,63 @@
             <div class="college-logo-caption"></div>
             <p class="institution">National Institute of Electronics & Information Technology (NIELIT), Srinagar</p>
             <p>Prepared by: <b>Waqar Maqbool Wani</b> (23045136010) & <b>Inshpreet Kour Mehta</b> (23045136011)</p>
+            <a href="https://github.com/Waqar-Wani/Automatic-Data-Analytics-with-NLP" target="_blank" class="github-link">
+                <i class="fab fa-github"></i> View on GitHub
+            </a>
         </div>
     </div>
     <!-- Introduction Section -->
     <section class="about-section-card">
         <h2><i class="fas fa-lightbulb icon"></i> Introduction</h2>
         <img class="about-section-img" src="{{ url_for('static', filename='images/intro.jpg') }}" alt="Data Analysis">
-        <p>The proposed project provides users with a seamless and intuitive way to analyze datasets and extract meaningful insights through natural language interaction. Users can upload datasets in various formats (e.g., CSV, Excel, JSON), and the system automatically generates descriptive statistics, visualizations, and actionable insights. It integrates an NLP chatbot powered by APIs such as ChatGPT, DeepSeek, or similar, allowing users to interact with their data through plain English queries, with the chatbot responding with relevant summaries, charts, or dashboards.</p>
+        <p>This project is an AI-powered data analytics platform that enables users to analyze datasets and extract insights through a natural language interface. Users can upload datasets (CSV, Excel, JSON), and the system automatically generates descriptive statistics, visualizations, and actionable insights. The platform features an integrated NLP chatbot powered by the OpenRouter API (OpenAI-compatible, using the Qwen model), allowing users to interact with their data using plain English queries. The chatbot responds with relevant summaries, charts, or dashboard updates, making data analysis accessible to non-technical users.</p>
     </section>
     <!-- Key Features Section -->
     <section class="about-section-card">
         <h2><i class="fas fa-star icon"></i> Key Features</h2>
         <img class="about-section-img" src="{{ url_for('static', filename='images/features.png') }}" alt="Features">
         <ul class="about-features-list">
-            <li><i class="fas fa-upload icon"></i> Data Upload & Processing (CSV, Excel, JSON formats).</li>
-            <li><i class="fas fa-chart-bar icon"></i> Automated Analysis: Summary statistics, visualizations, pattern and anomaly detection.</li>
-            <li><i class="fas fa-comments icon"></i> NLP Chatbot: Natural language queries via AI APIs like ChatGPT, DeepSeek.</li>
-            <li><i class="fas fa-tachometer-alt icon"></i> Interactive Dashboard: Real-time filtering, sorting, export options using Plotly Dash or Streamlit.</li>
+            <li><i class="fas fa-upload icon"></i> Data Upload & Processing (CSV, Excel, JSON formats) with automatic schema detection and type inference.</li>
+            <li><i class="fas fa-chart-bar icon"></i> Automated Analysis: Summary statistics, visualizations, pattern and anomaly detection using Pandas, Numpy, and Seaborn.</li>
+            <li><i class="fas fa-magic icon"></i> AI-Powered Data Summarization: Generates concise, human-readable summaries of datasets using the OpenRouter API.</li>
+            <li><i class="fas fa-filter icon"></i> Advanced Filtering: Apply complex, multi-condition filters to datasets via natural language or structured queries.</li>
+            <li><i class="fas fa-comments icon"></i> NLP Chatbot: Natural language queries via OpenRouter API (Qwen model), supporting context-aware data exploration and manipulation.</li>
+            <li><i class="fas fa-tachometer-alt icon"></i> Interactive Dashboard: Real-time filtering, sorting, and export options using Plotly, with support for 2D and 3D charts.</li>
+            <li><i class="fas fa-lock icon"></i> Secure API Integration: All AI and data operations are performed securely with local deployment and environment-based API key management.</li>
+            <li><i class="fas fa-database icon"></i> User Reviews: Collect and display user feedback within the platform, stored in a secure database.</li>
+            <li><i class="fas fa-cogs icon"></i> Extensible Architecture: Modular backend and frontend design for easy integration of new analytics or visualization modules.</li>
         </ul>
     </section>
     <!-- Use Cases Section -->
     <section class="about-section-card">
         <h2><i class="fas fa-briefcase-medical icon"></i> Use Cases</h2>
         <ul>
-            <li><b>Healthcare:</b> Analyze patient data to detect disease trends and predict risks.</li>
-            <li><b>Education:</b> Monitor student performance and identify at-risk learners.</li>
-            <li><b>Business:</b> Visualize sales data, customer demographics, and manage inventory efficiently.</li>
+            <li><b>Healthcare:</b> Analyze patient data to detect disease trends, predict risks, and automate compliance reporting using advanced filtering and AI-powered summarization.</li>
+            <li><b>Education:</b> Monitor student performance, identify at-risk learners, and generate automated insights for curriculum improvement and resource allocation.</li>
+            <li><b>Business:</b> Visualize sales data, customer demographics, manage inventory efficiently, and perform churn analysis or market segmentation using interactive dashboards.</li>
+            <li><b>Finance:</b> Perform fraud detection, risk assessment, and portfolio analysis on large financial datasets with automated anomaly detection and natural language querying.</li>
+            <li><b>IoT & Sensor Data:</b> Aggregate and analyze real-time sensor data streams, detect anomalies, and generate actionable alerts using AI-driven analytics.</li>
+            <li><b>HR Analytics:</b> Analyze employee data for attrition prediction, diversity metrics, and performance trends using advanced filtering and visualization tools.</li>
+            <li><b>Research & Academia:</b> Rapidly explore and summarize experimental or survey data, generate publication-ready charts, and automate data cleaning workflows.</li>
+            <li><b>Government & Public Sector:</b> Analyze census, public health, or transportation data to inform policy decisions and improve service delivery with secure, local data processing.</li>
         </ul>
     </section>
     <!-- Problem Formulation Section -->
     <section class="about-section-card">
         <h2><i class="fas fa-exclamation-triangle icon"></i> Problem Formulation</h2>
-        <p>Organizations generate vast amounts of data, but non-technical users find it difficult to derive insights due to the technical barrier. Traditional tools like Tableau and Power BI lack natural language interaction. General-purpose AI models are not secure for sensitive data processing.</p>
+        <p>
+            Modern organizations generate vast and heterogeneous datasets from multiple sources (CSV, Excel, JSON, sensors, databases), making it challenging to extract actionable insights. Non-technical users often lack the expertise to perform advanced analytics or data cleaning. Traditional BI tools (e.g., Tableau, Power BI) require manual configuration, lack natural language interfaces, and are not always suitable for real-time or ad hoc analysis. Furthermore, using general-purpose cloud AI models for sensitive data raises privacy and compliance concerns. There is a critical need for a secure, explainable, and user-friendly analytics platform that enables real-time, natural language-driven data exploration and insight generation for all users, regardless of technical background.
+        </p>
     </section>
     <!-- Proposed Solution Section -->
     <section class="about-section-card">
         <h2><i class="fas fa-cogs icon"></i> Proposed Solution</h2>
         <ul>
-            <li>Automated Data Analysis</li>
-            <li>NLP Chatbot Integration</li>
-            <li>Secure Local Deployment for Privacy</li>
+            <li>AI-Powered Natural Language Querying: Enables users to interact with datasets using plain English, powered by OpenRouter API (Qwen model) for context-aware data analysis and filtering.</li>
+            <li>Automated Data Analysis & Visualization: Instantly generates descriptive statistics, advanced visualizations (2D/3D), and actionable insights using Pandas, Numpy, Plotly, and Seaborn.</li>
+            <li>Secure Local Data Processing: All data operations and AI queries are performed on the user's local environment, ensuring privacy and compliance for sensitive datasets.</li>
+            <li>Modular & Extensible Architecture: Backend and frontend are designed for easy integration of new analytics modules, visualization types, or external APIs.</li>
+            <li>Interactive Dashboards & User Feedback: Real-time, user-friendly dashboards with export options and built-in user review system to drive continuous improvement.</li>
         </ul>
     </section>
     <!-- Objectives Section -->
@@ -65,7 +82,7 @@
         <ul>
             <li>Enable Seamless Data Upload and Processing</li>
             <li>Provide Automated Insights and Visualizations</li>
-            <li>Integrate NLP-Based Querying Capabilities</li>
+            <li>Integrate NLP-Based Querying Capabilities (OpenRouter API, Qwen)</li>
             <li>Ensure Data Privacy and Security</li>
             <li>Support Domain-Specific Use Cases</li>
             <li>Promote Scalability and Flexibility</li>
@@ -76,12 +93,18 @@
         <h2><i class="fas fa-project-diagram icon"></i> Methodology/Planning of Work</h2>
         <img class="about-section-img" src="{{ url_for('static', filename='images/methodology.jpg') }}" alt="Architecture Diagram">
         <ul>
-            <li><b>Frontend:</b> React.js or Streamlit - File upload, dashboards, chatbot UI</li>
-            <li><b>Backend:</b> Flask or Django - API handling, authentication</li>
-            <li><b>Data Processing:</b> Pandas, PySpark - Cleaning, preprocessing</li>
+            <li><b>Frontend:</b> Flask (Jinja2 templates), HTML, CSS, JavaScript. Uses AJAX for asynchronous data upload, dashboard updates, and chatbot communication. Responsive UI for data preview, charting, and chatbot interaction.</li>
+            <li><b>Backend:</b> Flask REST API with modular blueprints for NLP, reviews, and data processing. Handles authentication, session management, and secure API key usage.</li>
+            <li><b>Data Processing:</b> Pandas and Numpy for schema inference, data cleaning, normalization, and advanced multi-condition filtering. Supports CSV, Excel, and JSON formats.</li>
+            <li><b>Analytics Engine:</b> Plotly and Seaborn for generating interactive 2D/3D charts, anomaly detection, and exportable visualizations. Supports real-time dashboard updates.</li>
+            <li><b>NLP Chatbot:</b> OpenRouter API (Qwen model) for context-aware natural language queries, filter extraction, and AI-powered data summarization. Integrates securely with backend for data-driven responses.</li>
+            <li><b>Database:</b> SQLite (default, via SQLAlchemy ORM) for user reviews and session data, with optional support for PostgreSQL and MongoDB for scalability and backup.</li>
+            <li><b>Frontend:</b> Flask (Jinja2 templates), HTML, CSS, JavaScript - File upload, dashboards, chatbot UI</li>
+            <li><b>Backend:</b> Flask - API handling, authentication, data processing</li>
+            <li><b>Data Processing:</b> Pandas, Numpy - Cleaning, preprocessing</li>
             <li><b>Analytics Engine:</b> Plotly, Seaborn - Visualizations, anomaly detection</li>
-            <li><b>NLP Chatbot:</b> ChatGPT, DeepSeek - Query interpretation</li>
-            <li><b>Database:</b> SQLite, PostgreSQL, MongoDB - Storage and backup</li>
+            <li><b>NLP Chatbot:</b> OpenRouter API (Qwen model) - Query interpretation and data interaction</li>
+            <li><b>Database:</b> SQLite (default), with support for PostgreSQL and MongoDB - Storage and backup</li>
         </ul>
     </section>
 </div>

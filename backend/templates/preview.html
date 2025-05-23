@@ -14,115 +14,127 @@
     <h2>Dataset Overview</h2>
     <p>Review your uploaded dataset, generate charts, and ask questions with our AI-powered tools.</p>
 </section>
-<div class="preview-card">
-    <h3>Basic Information</h3>
-    <ul class="list-group list-group-flush mb-3">
-        {% for key, value in overview.items() %}
-            {% if key != 'Column Information' and key != 'columns' and key != 'numeric_columns' %}
-                {% if key == 'Dataset Summary' %}
-                    <li class="list-group-item"><strong>{{ key }}:</strong> {{ value|safe }}</li>
-                {% else %}
-                    <li class="list-group-item"><strong>{{ key }}:</strong> {{ value }}</li>
+<div class="preview-card-container">
+    <div class="preview-card">
+        <h3>Basic Information</h3>
+        <ul class="list-group list-group-flush mb-3">
+            {% for key, value in overview.items() %}
+                {% if key != 'Column Information' and key != 'columns' and key != 'numeric_columns' %}
+                    {% if key == 'Dataset Summary' %}
+                        <li class="list-group-item"><strong>{{ key }}:</strong> {{ value|safe }}</li>
+                    {% else %}
+                        <li class="list-group-item"><strong>{{ key }}:</strong> {{ value }}</li>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
-        {% endfor %}
-    </ul>
-</div>
-<div class="preview-card">
-    <h3>Generate a Chart</h3>
-    <form method="POST" action="/dashboard">
-        <input type="hidden" name="temp_path" value="{{ temp_path }}">
-        <div class="chart-form-flex mb-3">
-            <div>
-                <label for="chart_type" class="form-label">Chart Type</label>
-                <select name="chart_type" id="chart_type" class="form-select" required>
-                    <!-- Basic Charts -->
-                    <optgroup label="Basic Charts">
-                        <option value="bar">Bar Chart</option>
-                        <option value="line">Line Chart</option>
-                        <option value="scatter">Scatter Plot</option>
-                        <option value="pie">Pie Chart</option>
-                        <option value="histogram">Histogram</option>
-                        <option value="box">Box Plot</option>
-                        <option value="heatmap">Heatmap</option>
-                    </optgroup>
-                    <!-- Advanced Charts -->
-                    <optgroup label="Advanced Charts">
-                        <option value="area">Area Chart</option>
-                        <option value="bubble">Bubble Chart</option>
-                        <option value="donut">Donut Chart</option>
-                        <option value="stacked_bar">Stacked Bar Chart</option>
-                        <option value="horizontal_bar">Horizontal Bar Chart</option>
-                        <option value="violin">Violin Plot</option>
-                        <option value="treemap">Treemap</option>
-                        <option value="sunburst">Sunburst Chart</option>
-                        <option value="funnel">Funnel Chart</option>
-                        <option value="waterfall">Waterfall Chart</option>
-                    </optgroup>
-                    <!-- 2D Interactive Charts -->
-                    <optgroup label="2D Interactive Charts">
-                        <option value="contour">Contour Plot</option>
-                        <option value="density_heatmap">Density Heatmap</option>
-                        <option value="polar">Polar Chart</option>
-                        <option value="radar">Radar Chart</option>
-                        <option value="parallel_coordinates">Parallel Coordinates</option>
-                        <option value="parallel_categories">Parallel Categories</option>
-                    </optgroup>
-                    <!-- 3D Charts -->
-                    <optgroup label="3D Charts">
-                        <option value="scatter_3d">3D Scatter Plot</option>
-                        <option value="surface_3d">3D Surface Plot</option>
-                        <option value="line_3d">3D Line Plot</option>
-                        <option value="mesh_3d">3D Mesh Plot</option>
-                    </optgroup>
-                </select>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="preview-card">
+        <h3>Generate a Chart</h3>
+        <form method="POST" action="/dashboard">
+            <input type="hidden" name="temp_path" value="{{ temp_path }}">
+            <div class="chart-form-flex mb-3">
+                <div>
+                    <label for="chart_type" class="form-label">Chart Type</label>
+                    <select name="chart_type" id="chart_type" class="form-select" required>
+                        <!-- Basic Charts -->
+                        <optgroup label="Basic Charts">
+                            <option value="bar">Bar Chart</option>
+                            <option value="line">Line Chart</option>
+                            <option value="scatter">Scatter Plot</option>
+                            <option value="pie">Pie Chart</option>
+                            <option value="histogram">Histogram</option>
+                            <option value="box">Box Plot</option>
+                            <option value="heatmap">Heatmap</option>
+                        </optgroup>
+                        <!-- Advanced Charts -->
+                        <optgroup label="Advanced Charts">
+                            <option value="area">Area Chart</option>
+                            <option value="bubble">Bubble Chart</option>
+                            <option value="donut">Donut Chart</option>
+                            <option value="stacked_bar">Stacked Bar Chart</option>
+                            <option value="horizontal_bar">Horizontal Bar Chart</option>
+                            <option value="violin">Violin Plot</option>
+                            <option value="treemap">Treemap</option>
+                            <option value="sunburst">Sunburst Chart</option>
+                            <option value="funnel">Funnel Chart</option>
+                            <option value="waterfall">Waterfall Chart</option>
+                        </optgroup>
+                        <!-- 2D Interactive Charts -->
+                        <optgroup label="2D Interactive Charts">
+                            <option value="contour">Contour Plot</option>
+                            <option value="density_heatmap">Density Heatmap</option>
+                            <option value="polar">Polar Chart</option>
+                            <option value="radar">Radar Chart</option>
+                            <option value="parallel_coordinates">Parallel Coordinates</option>
+                            <option value="parallel_categories">Parallel Categories</option>
+                        </optgroup>
+                        <!-- 3D Charts -->
+                        <optgroup label="3D Charts">
+                            <option value="scatter_3d">3D Scatter Plot</option>
+                            <option value="surface_3d">3D Surface Plot</option>
+                            <option value="line_3d">3D Line Plot</option>
+                            <option value="mesh_3d">3D Mesh Plot</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div>
+                    <label for="x_column" class="form-label">X-Axis (Category Column)</label>
+                    <select name="x_column" id="x_column" class="form-select" required>
+                        {% for col in overview.columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="y_column" class="form-label">Y-Axis (Numeric Column(s))</label>
+                    <select name="y_column" id="y_column" class="form-select" multiple required>
+                        {% for col in overview.numeric_columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                    <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple columns.</small>
+                </div>
             </div>
-            <div>
-                <label for="x_column" class="form-label">X-Axis (Category Column)</label>
-                <select name="x_column" id="x_column" class="form-select" required>
-                    {% for col in overview.columns %}
-                    <option value="{{ col }}">{{ col }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div>
-                <label for="y_column" class="form-label">Y-Axis (Numeric Column(s))</label>
-                <select name="y_column" id="y_column" class="form-select" multiple required>
-                    {% for col in overview.numeric_columns %}
-                    <option value="{{ col }}">{{ col }}</option>
-                    {% endfor %}
-                </select>
-                <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple columns.</small>
-            </div>
+            <button type="submit" class="preview-btn">Generate Chart</button>
+        </form>
+    </div>
+    <div class="preview-card">
+        <h3>Ask a Question (NLP Chatbot)</h3>
+        <form id="nlp-form">
+          <div class="input-group">
+            <input type="text" id="nlp-query" class="form-control" placeholder="Ask a question about your data...">
+            <button class="preview-btn" type="submit">Send</button>
+          </div>
+        </form>
+        <div id="nlp-response" class="mt-3"></div>
+        <div class="nlp-examples" style="margin-top: 18px;">
+          <strong>Example queries you can try:</strong>
+          <ul style="margin-top: 8px;">
+            <li>Show only rows where Age is less than 30</li>
+            <li>List all entries where Sex is female</li>
+            <li>Filter data for Region equal to North America</li>
+            <li>Show records where BMI is greater than 25 and Ethnicity is Asian</li>
+            <li>Display rows where Blood Pressure Systolic is above 120</li>
+          </ul>
         </div>
-        <button type="submit" class="preview-btn">Generate Chart</button>
-    </form>
-</div>
-<div class="preview-card">
-    <h3>Ask a Question (NLP Chatbot)</h3>
-    <form id="nlp-form">
-      <div class="input-group">
-        <input type="text" id="nlp-query" class="form-control" placeholder="Ask a question about your data...">
-        <button class="preview-btn" type="submit">Send</button>
-      </div>
-    </form>
-    <div id="nlp-response" class="mt-3"></div>
-</div>
-<div class="preview-card">
-    <h3>Data Preview</h3>
-    <div class="data-container">
-        <button id="refresh-preview-btn" class="preview-btn" style="margin-bottom: 10px;">Refresh Data Preview</button>
-        <table id="data-table" class="display nowrap table table-bordered" style="width:100%">
-            <thead>
-                <tr>
-                    {% for col in overview.columns %}
-                    <th>{{ col }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+    </div>
+    <div class="preview-card">
+        <h3>Data Preview</h3>
+        <div class="data-container">
+            <button id="save-filtered-btn" class="preview-btn" style="margin-bottom: 10px;">Save Data</button>
+            <table id="data-table" class="display nowrap table table-bordered" style="width:100%">
+                <thead>
+                    <tr>
+                        {% for col in overview.columns %}
+                        <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 <!-- jQuery + DataTables -->
@@ -157,6 +169,27 @@
             stateSave: true,
             order: []
         });
+
+        // Save Filtered Data Button AJAX
+        document.getElementById('save-filtered-btn').addEventListener('click', function() {
+            const tempId = '{{ temp_path }}';
+            fetch(`/save_filtered_data/${tempId}`, {
+                method: 'GET',
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'filtered_data.csv'; // You can make this dynamic later
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(() => alert('Error saving filtered data.'));
+        });
+
     });
     // Dynamic chart form fields
     function updateFormFields() {
@@ -299,9 +332,66 @@
             table.ajax.reload();
         });
     });
-    document.getElementById('refresh-preview-btn').addEventListener('click', function() {
-        var table = $('#data-table').DataTable();
-        table.ajax.reload();
+    function wordCount(str) {
+      return str.trim().split(/\s+/).length;
+    }
+    function renderReviews(reviews) {
+      const list = document.getElementById('reviews-list');
+      list.innerHTML = '';
+      reviews.forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'review-card';
+        card.innerHTML = `
+          <div class="review-meta">
+            <strong>${r.username}</strong>
+            ${r.position ? `<span>(${r.position})</span>` : ''}
+            <span class="review-date">${r.timestamp}</span>
+          </div>
+          <div class="review-message">${r.review.replace(/</g, '&lt;')}</div>
+        `;
+        list.appendChild(card);
+      });
+    }
+    function fetchReviews() {
+      fetch('/reviews')
+        .then(res => res.json())
+        .then(renderReviews);
+    }
+    document.getElementById('review-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const username = document.getElementById('review-username').value.trim();
+      const position = document.getElementById('review-position').value.trim();
+      const review = document.getElementById('review-message').value.trim();
+      const feedback = document.getElementById('review-form-feedback');
+      feedback.textContent = '';
+      let errors = [];
+      if (!username || username.length < 2) errors.push('Username must be at least 2 characters.');
+      if (position.length > 50) errors.push('Position/Role must be 50 characters or less.');
+      const wc = wordCount(review);
+      if (!review || wc < 20 || wc > 200) errors.push('Review must be between 20 and 200 words.');
+      if (errors.length) {
+        feedback.textContent = errors.join(' ');
+        feedback.style.color = 'red';
+        return;
+      }
+      fetch('/reviews', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({username, position, review})
+      })
+      .then(res => res.json().then(data => ({ok: res.ok, ...data})))
+      .then(data => {
+        if (data.success) {
+          feedback.textContent = data.message;
+          feedback.style.color = 'green';
+          this.reset();
+          fetchReviews();
+        } else {
+          feedback.textContent = (data.errors || ['Unknown error']).join(' ');
+          feedback.style.color = 'red';
+        }
+      });
     });
+    fetchReviews();
 </script>
 {% endblock %}

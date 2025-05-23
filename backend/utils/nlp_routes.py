@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, render_template
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
-from backend.utils.openrouter_client import call_openrouter_api
+from backend.utils.openrouter_client import call_openrouter_api, MODEL_NAME
 from backend.data_preprocessing.filter_handler import get_global_filters, save_all_filters, update_filtered_cache
 import json
 import re
@@ -13,7 +13,7 @@ nlp_bp = Blueprint('nlp', __name__)
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 
 # Initialize OpenRouter client
 client = OpenAI(
@@ -55,7 +55,7 @@ def nlp_query():
     numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
     categorical_cols = df.select_dtypes(include=['object', 'category']).columns.tolist()
     schema = ', '.join([f'{col} ({str(dtype)})' for col, dtype in zip(df.columns, df.dtypes)])
-
+    
     # Stronger system prompt for valid JSON
     messages = [
         {
@@ -191,7 +191,7 @@ def analyze_data():
         
         return jsonify({
             'response': response,
-            'model': 'qwen/qwen3-0.6b-04-28:free'
+            'model': MODEL_NAME
         })
         
     except Exception as e:

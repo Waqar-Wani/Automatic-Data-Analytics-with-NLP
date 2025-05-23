@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 
 # Initialize OpenRouter client
 client = OpenAI(
@@ -14,7 +14,9 @@ client = OpenAI(
     api_key=OPENROUTER_API_KEY,
 )
 
-def call_openrouter_api(messages, model="qwen/qwen3-0.6b-04-28:free", max_tokens=2000):
+MODEL_NAME = "mistralai/devstral-small:free"
+
+def call_openrouter_api(messages, model=MODEL_NAME, max_tokens=500):
     if not OPENROUTER_API_KEY:
         raise ValueError("OpenRouter API key is not set. Please check your .env file.")
     

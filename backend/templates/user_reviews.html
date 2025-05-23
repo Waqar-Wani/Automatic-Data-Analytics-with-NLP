@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}User Reviews | DataPulse Analytics{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/static/css/user_reviews.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body_class %}user-reviews-page{% endblock %}
+
+{% block content %}
+<div class="reviews-main-container">
+    <!-- Add Review Section -->
+    <section class="review-section-card">
+        <h2><i class="fas fa-pen-nib icon"></i> Add a Review</h2>
+        <form id="add-review-form" class="add-review-form">
+            <div class="input-group">
+                <input type="text" name="name" placeholder="Your Name" required>
+                <div class="star-rating" id="star-rating">
+                    <span class="star" data-value="1">&#9733;</span>
+                    <span class="star" data-value="2">&#9733;</span>
+                    <span class="star" data-value="3">&#9733;</span>
+                    <span class="star" data-value="4">&#9733;</span>
+                    <span class="star" data-value="5">&#9733;</span>
+                </div>
+                <input type="hidden" name="rating" id="rating-input" value="0">
+            </div>
+            <textarea name="review" placeholder="Write your review..." required></textarea>
+            <button type="submit">Submit Review</button>
+        </form>
+    </section>
+    <!-- Reviews List Section -->
+    <section class="review-section-card">
+        <h2><i class="fas fa-comments icon"></i> User Reviews</h2>
+        <div class="reviews-carousel">
+            <button class="carousel-arrow left" aria-label="Scroll left"><i class="fas fa-chevron-left"></i></button>
+            <div class="reviews-list">
+                {% for review in reviews %}
+                <div class="review-card">
+                    <div class="review-header">
+                        <span class="review-name">{{ review.Name }}</span>
+                        <span class="review-rating">{{ '★' * review.Rating }}{{ '☆' * (5 - review.Rating) }}</span>
+                        </div>
+                    <div class="review-text">{{ review.Review }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-arrow right" aria-label="Scroll right"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </section>
+</div>
+<script src="/static/js/user_reviews.js"></script>
+{% endblock %} 
