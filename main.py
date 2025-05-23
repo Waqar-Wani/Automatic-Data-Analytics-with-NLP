@@ -12,11 +12,11 @@ from backend.data_preprocessing.data_cleaning import handle_missing_values, norm
 from backend.data_preprocessing.data_overview import generate_overview
 from backend.data_preprocessing.data_cache import get_cache, set_cache
 from backend.data_visualization.chart_generation import generate_chart
-from backend.nlp_routes import nlp_bp
+from backend.utils.nlp_routes import nlp_bp
 from backend.data_preprocessing.filter_handler import apply_filters, safe_query, get_global_filters, clear_all_filters, update_filtered_cache
 from backend.data_preprocessing.filtered_cache import get_filtered_cache, set_filtered_cache, clear_filtered_cache
-from backend.models import db, UserReview
-from backend.reviews import reviews_bp
+from backend.utils.models import db, UserReview
+from backend.utils.reviews import reviews_bp
 
 # Initialize Flask app
 app = Flask(__name__, static_folder=os.path.join('backend', 'static'), template_folder=os.path.join('backend', 'templates'))
@@ -257,6 +257,24 @@ def user_reviews():
         else:
             reviews = []
         return render_template('user_reviews.html', reviews=reviews)
+
+@app.route('/save_filtered_data/<temp_id>', methods=['GET'])
+def save_filtered_data(temp_id):
+    df = get_filtered_cache().get(temp_id)
+    if df is None:
+        return jsonify({"error": "Dataset not found or session expired"}), 404
+    
+    try:
+        # Convert DataFrame to CSV
+        csv_data = df.to_csv(index=False)
+        
+        # Create response for download
+        response = make_response(csv_data)
+        response.headers["Content-Disposition"] = "attachment; filename=filtered_data.csv"
+        response.headers["Content-Type"] = "text/csv"
+        return response
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/project-authors')
 def project_authors():

@@ -122,7 +122,7 @@
     <div class="preview-card">
         <h3>Data Preview</h3>
         <div class="data-container">
-            <button id="refresh-preview-btn" class="preview-btn" style="margin-bottom: 10px;">Refresh Data Preview</button>
+            <button id="save-filtered-btn" class="preview-btn" style="margin-bottom: 10px;">Save Data</button>
             <table id="data-table" class="display nowrap table table-bordered" style="width:100%">
                 <thead>
                     <tr>
@@ -169,6 +169,27 @@
             stateSave: true,
             order: []
         });
+
+        // Save Filtered Data Button AJAX
+        document.getElementById('save-filtered-btn').addEventListener('click', function() {
+            const tempId = '{{ temp_path }}';
+            fetch(`/save_filtered_data/${tempId}`, {
+                method: 'GET',
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'filtered_data.csv'; // You can make this dynamic later
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(() => alert('Error saving filtered data.'));
+        });
+
     });
     // Dynamic chart form fields
     function updateFormFields() {
@@ -310,10 +331,6 @@
             var table = $('#data-table').DataTable();
             table.ajax.reload();
         });
-    });
-    document.getElementById('refresh-preview-btn').addEventListener('click', function() {
-        var table = $('#data-table').DataTable();
-        table.ajax.reload();
     });
     function wordCount(str) {
       return str.trim().split(/\s+/).length;
