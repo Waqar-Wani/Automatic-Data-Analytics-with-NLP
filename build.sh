@@ -12,13 +12,21 @@ pip install -r requirements.txt
 # Create necessary directories
 mkdir -p public
 mkdir -p functions
+mkdir -p functions/templates
+mkdir -p functions/static
 
 # Copy static files to public directory
 cp -r backend/static/* public/ 2>/dev/null || :
 
 # Copy templates to functions directory
-mkdir -p functions/templates
 cp -r backend/templates/* functions/templates/ 2>/dev/null || :
+
+# Copy static files to functions directory
+cp -r backend/static/* functions/static/ 2>/dev/null || :
+
+# Copy main application files
+cp main.py functions/
+cp -r backend functions/
 
 # Create a simple index.html if it doesn't exist
 if [ ! -f public/index.html ]; then
