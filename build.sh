@@ -12,11 +12,24 @@ source venv/bin/activate
 # Install dependencies from requirements.txt
 pip install -r requirements.txt
 
-# Netlify will automatically pick up functions in the 'functions' directory
-# We don't need to copy api.py as it's already in the correct source location.
+# --- Prepare files for Netlify deployment ---
+
+# Ensure the functions directory exists in the build output
+mkdir -p functions
+
+# Copy the function handler file to the functions directory (if it's not already there)
+cp functions/api.py functions/
+
+# Copy the main application file and backend directory to the root of the build output
+# These are needed for the function handler (api.py) to import them correctly.
+cp main.py .
+cp -r backend/ .
 
 # Create a simple index.html in the public directory to redirect to the function
 mkdir -p public
 if [ ! -f public/index.html ]; then
     echo "<!DOCTYPE html>\n<html>\n<head>\n    <title>Redirecting...</title>\n    <meta http-equiv=\"refresh\" content=\"0; url=/.netlify/functions/api/\" />\n</head>\n<body>\n    <p>Redirecting to the application...</p>\n</body>\n</html>" > public/index.html
-fi 
+fi
+
+# Deactivate virtual environment (optional but good practice)
+deactivate 
