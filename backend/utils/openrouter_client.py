@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 
 # Initialize OpenRouter client
 client = OpenAI(
