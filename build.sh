@@ -1,43 +1,22 @@
 #!/bin/bash
 
-# Create virtual environment
+# Exit immediately if a command exits with a non-zero status.
+set -e
+
+# Create virtual environment in the project root
 python -m venv venv
 
 # Activate virtual environment
 source venv/bin/activate
 
-# Install dependencies
+# Install dependencies from requirements.txt
 pip install -r requirements.txt
 
-# Create necessary directories
+# Netlify will automatically pick up functions in the 'functions' directory
+# We don't need to copy api.py as it's already in the correct source location.
+
+# Create a simple index.html in the public directory to redirect to the function
 mkdir -p public
-mkdir -p functions
-mkdir -p functions/templates
-mkdir -p functions/static
-
-# Copy static files to public directory
-cp -r backend/static/* public/ 2>/dev/null || :
-
-# Copy templates to functions directory
-cp -r backend/templates/* functions/templates/ 2>/dev/null || :
-
-# Copy static files to functions directory
-cp -r backend/static/* functions/static/ 2>/dev/null || :
-
-# Copy main application files
-cp main.py functions/
-cp -r backend functions/
-
-# Create a simple index.html if it doesn't exist
 if [ ! -f public/index.html ]; then
-    echo "<!DOCTYPE html>
-<html>
-<head>
-    <title>Data Analytics App</title>
-    <meta http-equiv=\"refresh\" content=\"0; url=/.netlify/functions/api/\" />
-</head>
-<body>
-    <p>Redirecting to the application...</p>
-</body>
-</html>" > public/index.html
+    echo "<!DOCTYPE html>\n<html>\n<head>\n    <title>Redirecting...</title>\n    <meta http-equiv=\"refresh\" content=\"0; url=/.netlify/functions/api/\" />\n</head>\n<body>\n    <p>Redirecting to the application...</p>\n</body>\n</html>" > public/index.html
 fi 
