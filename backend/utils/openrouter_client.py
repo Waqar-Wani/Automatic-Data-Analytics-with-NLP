@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 
 # Initialize OpenRouter client
 client = OpenAI(
@@ -14,7 +14,7 @@ client = OpenAI(
     api_key=OPENROUTER_API_KEY,
 )
 
-MODEL_NAME = "mistralai/devstral-small:free"
+MODEL_NAME = "mistralai/mistral-small-3.2-24b-instruct:free"
 
 def call_openrouter_api(messages, model=MODEL_NAME, max_tokens=500):
     if not OPENROUTER_API_KEY:

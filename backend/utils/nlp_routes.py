@@ -13,7 +13,7 @@ nlp_bp = Blueprint('nlp', __name__)
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 
 # Initialize OpenRouter client
 client = OpenAI(
