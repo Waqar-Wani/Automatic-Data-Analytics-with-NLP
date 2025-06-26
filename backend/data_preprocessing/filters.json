@@ -1,12 +1,7 @@
 [
   {
-    "column": "Price Per Kg (usd)",
-    "operator": ">=",
-    "value": 3.4
-  },
-  {
-    "column": "Price Per Kg (usd)",
-    "operator": "<=",
-    "value": 8
+    "column": "Sex",
+    "operator": "==",
+    "value": "Female"
   }
 ]

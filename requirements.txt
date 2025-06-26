@@ -1,45 +1,77 @@
 # Web Framework and API
-Flask==3.1.0
-flask-cors==5.0.1
-python-dotenv==1.1.0
-Werkzeug==3.1.3
+Flask==2.3.3
+flask-cors==4.0.0
+python-dotenv==1.0.0
+Werkzeug==2.3.7
+Jinja2==3.1.2
+itsdangerous==2.1.2
+click==8.1.7
+blinker==1.6.2
 
 # Data Processing and Analysis
-pandas==2.2.3
-numpy==2.2.5
-openpyxl==3.1.5
+pandas==1.5.3
+numpy==1.24.3
+openpyxl==3.1.2
 xlrd==2.0.1
-python-docx==1.1.2
-pypdf==5.2.0
+python-docx==0.8.11
+pypdf==3.17.1
+python-dateutil==2.8.2
+pytz==2023.3
+et_xmlfile==1.1.0
 
 # Data Visualization
-matplotlib==3.10.1
-seaborn==0.13.2
-plotly==6.0.1
-networkx==3.4.2
-wordcloud==1.9.4
-geopandas==1.0.1
+matplotlib==3.7.2
+seaborn==0.12.2
+plotly==5.18.0
+networkx==3.1
+wordcloud==1.9.2
+geopandas==0.13.2
+contourpy==1.0.7
+cycler==0.11.0
+kiwisolver==1.4.4
+Pillow==10.0.0
 
 # Natural Language Processing
-spacy==3.8.5
-transformers==4.46.3
-sentence-transformers==4.1.0
-scikit-learn==1.5.2
+spacy==3.6.1
+transformers==4.30.2
+sentence-transformers==2.2.2
+scikit-learn==1.3.0
+scikit-fuzzy==0.4.2
+scipy==1.10.1
+regex==2023.6.3
+tokenizers==0.13.3
+huggingface-hub==0.16.4
+torch==2.0.1
 
 # Database and Storage
-pymongo==4.12.0
-psycopg2-binary==2.9.10
-SQLAlchemy==2.0.40
+pymongo==4.5.0
+psycopg2-binary==2.9.7
+SQLAlchemy==2.0.20
+dnspython==2.4.2
 
 # Utilities
-python-multipart==0.0.20
-requests==2.32.3
-tqdm==4.67.0
-Pillow==11.2.1
-opencv-python==4.10.0.84
-opencv-contrib-python==4.10.0.84
+python-multipart==0.0.6
+requests==2.31.0
+tqdm==4.65.0
+opencv-python==4.8.0.76
+opencv-contrib-python==4.8.0.76
+certifi==2023.7.22
+charset-normalizer==3.2.0
+idna==3.4
+urllib3==2.0.4
+PyYAML==6.0.1
+six==1.16.0
+packaging==23.1
+typing_extensions==4.7.1
+filelock==3.12.2
+joblib==1.3.1
 
 # Development and Testing
-pytest==8.0.2
-black==24.2.0
-flake8==7.0.0
+pytest==7.4.0
+black==23.7.0
+flake8==6.1.0
+colorama==0.4.6
+Pygments==2.16.1
+markdown-it-py==3.0.0
+mdurl==0.1.2
+rich==13.5.2
