@@ -19,7 +19,7 @@
         <h3>Basic Information</h3>
         <ul class="list-group list-group-flush mb-3">
             {% for key, value in overview.items() %}
-                {% if key != 'Column Information' and key != 'columns' and key != 'numeric_columns' %}
+                {% if key != 'Column Information' and key != 'columns' and key != 'numeric_columns' and key != 'Automated Insights' %}
                     {% if key == 'Dataset Summary' %}
                         <li class="list-group-item"><strong>{{ key }}:</strong> {{ value|safe }}</li>
                     {% else %}
@@ -29,6 +29,22 @@
             {% endfor %}
         </ul>
     </div>
+    <div class="preview-card">
+        <h3>Automated Insights (AI-Powered)</h3>
+        <div class="ai-insights">
+            {{ overview['Automated Insights']|replace('\n', '<br>')|safe }}
+        </div>
+    </div>
+    {% if chart_suggestion and chart_suggestion|length > 0 %}
+    <div class="preview-card">
+        <h3>AI Chart Suggestions</h3>
+        <ul class="list-group list-group-flush mb-2">
+            {% for chart_type in chart_suggestion %}
+            <li class="list-group-item">{{ chart_type|capitalize }} Chart</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
     <div class="preview-card">
         <h3>Generate a Chart</h3>
         <form method="POST" action="/dashboard">
@@ -107,7 +123,8 @@
             <button class="preview-btn" type="submit">Send</button>
           </div>
         </form>
-        <div id="nlp-response" class="mt-3"></div>
+        <!-- <div id="nlp-response" class="mt-3"></div> -->
+        <div id="nlp-answer" class="nlp-answer mt-2" style="font-weight: 500; color: #007b83;"></div>
         <div class="nlp-examples" style="margin-top: 18px;">
           <strong>Example queries you can try:</strong>
           <ul style="margin-top: 8px;">
@@ -319,7 +336,13 @@
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('nlp-response').innerHTML = data.html;
+            // document.getElementById('nlp-response').innerHTML = data.html;
+            // Show the AI's textual answer if present
+            if (data.nlp_answer) {
+                document.getElementById('nlp-answer').innerHTML = data.nlp_answer;
+            } else {
+                document.getElementById('nlp-answer').innerHTML = '';
+            }
             // Update Data Preview table if filtered data is available
             if (data.filtered_data) {
                 var table = $('#data-table').DataTable();

@@ -9,7 +9,7 @@ from flask_cors import CORS, cross_origin
 
 from backend.data_preprocessing.file_processing import read_file
 from backend.data_preprocessing.data_cleaning import handle_missing_values, normalize_column_names
-from backend.data_preprocessing.data_overview import generate_overview
+from backend.data_preprocessing.data_overview import generate_overview, generate_chart_suggestion, suggest_charts
 from backend.data_preprocessing.data_cache import get_cache, set_cache
 from backend.data_visualization.chart_generation import generate_chart
 from backend.utils.nlp_routes import nlp_bp
@@ -66,6 +66,11 @@ def upload():
         overview['columns'] = df.columns.tolist()
         overview['numeric_columns'] = df.select_dtypes(include='number').columns.tolist()
 
+        # Chart suggestion (minimize token usage)
+        dataset_summary = overview.get('Dataset Summary', None)
+        chart_suggestion = generate_chart_suggestion(df, dataset_summary)
+        chart_suggestions = suggest_charts(df)
+
         # Store DataFrame temporarily
         temp_id = str(len(get_cache()) + 1)
         set_cache(temp_id, df)
@@ -80,7 +85,9 @@ def upload():
                                table_header=table_header,
                                table_body=table_body,
                                overview=overview,
-                               temp_path=temp_id)
+                               temp_path=temp_id,
+                               chart_suggestion=chart_suggestion,
+                               chart_suggestions=chart_suggestions)
 
     except Exception as e:
         error_msg = str(e)
