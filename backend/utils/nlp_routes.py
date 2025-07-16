@@ -13,7 +13,7 @@ nlp_bp = Blueprint('nlp', __name__)
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = "ssk-or-v1-0ead59023d1d951a7a7bfda1232aef99943e34d1fd988ad0bd9c66de3d0e8d91"
+OPENROUTER_API_KEY = "sk-or-v1-79a666da353e45c220573ef5dea02e5350ee3709e7571d390b39a1c566a9e1b"
 
 # Initialize OpenRouter client
 client = OpenAI(
@@ -104,6 +104,7 @@ def nlp_query():
     try:
         try:
             ai_response = call_openrouter_api(messages)
+            print("[DEBUG] Raw AI response:", ai_response)
         except Exception as e:
             print(f"OpenRouter API error: {str(e)}")
             return jsonify({'html': parse_api_error_message(e)})
@@ -111,24 +112,38 @@ def nlp_query():
         # Extract answer and filters from AI response
         answer = None
         filter_json = None
-        ai_json_str = extract_json_from_code_block(ai_response)
-        if ai_json_str:
-            try:
-                ai_json = json.loads(ai_json_str)
-                answer = ai_json.get('answer', None)
-                filter_json = json.dumps(ai_json.get('filters', []), indent=2)
-            except Exception:
-                filter_json = None
+        ai_json = None
+        # 1. Try to parse as JSON directly
+        try:
+            ai_json = json.loads(ai_response)
+            print("[DEBUG] Parsed as JSON directly:", ai_json)
+            answer = ai_json.get('answer', None)
+            filter_json = json.dumps(ai_json.get('filters', []), indent=2)
+        except Exception:
+            # 2. Try to extract JSON from code block
+            ai_json_str = extract_json_from_code_block(ai_response)
+            print("[DEBUG] Extracted JSON from code block:", ai_json_str)
+            if ai_json_str:
+                try:
+                    ai_json = json.loads(ai_json_str)
+                    print("[DEBUG] Parsed JSON from code block:", ai_json)
+                    answer = ai_json.get('answer', None)
+                    filter_json = json.dumps(ai_json.get('filters', []), indent=2)
+                except Exception as e:
+                    print("[DEBUG] Failed to parse JSON from code block:", e)
+                    filter_json = None
+                    answer = None
+            else:
+                # 3. Fallback: try to extract JSON array for filters as before
+                json_match = re.search(r'\[.*?\]', ai_response, re.DOTALL)
+                filter_json = json_match.group(0) if json_match else None
+                print("[DEBUG] Fallback filter_json:", filter_json)
                 answer = None
-        else:
-            # Fallback: try to extract JSON array for filters as before
-            json_match = re.search(r'\[.*?\]', ai_response, re.DOTALL)
-            filter_json = json_match.group(0) if json_match else None
-            answer = None
         html = ""
         if filter_json:
             try:
                 new_filters = json.loads(filter_json)
+                print("[DEBUG] Parsed filters:", new_filters)
                 # Auto-fix if list of strings
                 if new_filters and isinstance(new_filters[0], str):
                     new_filters = fix_stringified_filters(new_filters)
@@ -136,16 +151,24 @@ def nlp_query():
                 if isinstance(new_filters, dict):
                     new_filters = [new_filters]
                 save_all_filters(new_filters)
+                print("[DEBUG] Filters saved to file.")
                 update_filtered_cache(temp_id)
+                # Get filtered data (first 10 rows)
+                from backend.data_preprocessing.filtered_cache import get_filtered_cache
+                filtered_df = get_filtered_cache().get(temp_id)
+                filtered_data = filtered_df.head(10).to_dict(orient='records') if filtered_df is not None else []
                 html = f"<div class='alert alert-success'>Filter(s) set and will be applied to all data previews.<br>JSON: <pre>{filter_json}</pre></div>"
             except Exception as ex:
+                print("[DEBUG] Exception during filter processing:", ex)
                 html = f"<div class='alert alert-danger'>Failed to parse filter JSON: {str(ex)}<br>AI response: <pre>{ai_response}</pre></div>"
+                filtered_data = []
         else:
             html = f"<div class='alert alert-warning'>No valid JSON filter found in AI response.<br>AI response: <pre>{ai_response}</pre></div>"
+            filtered_data = []
 
         return jsonify({
             'html': html,
-            'filtered_data': None,
+            'filtered_data': filtered_data,
             'nlp_answer': answer
         })
     except Exception as e:

@@ -80,6 +80,16 @@ def generate_dataset_summary(df, file_name=None):
                     <p class=\"mb-0\">Please try again tomorrow or upgrade your account for more requests.</p>
                 </div>
             """
+        if "401" in error_msg or "No auth credentials found" in error_msg:
+            return """
+                <div class='alert alert-warning' role='alert'>
+                    <h4 class='alert-heading'>AI Credentials Exhausted</h4>
+                    <ul>
+                        <li>Please try again after 24 hours, or insert a new API key in your settings/environment.</li>
+                    </ul>
+                    <hr>                    
+                </div>
+            """
         return f"<div class='alert alert-warning'>Unable to generate AI summary: {error_msg}</div>"
 
 def generate_data_summary(df):
@@ -136,6 +146,15 @@ def generate_automated_insights(df, file_name=None):
                     <p>The AI model has reached its daily usage limit.</p>
                     <hr>
                     <p class=\"mb-0\">Please try again tomorrow or upgrade your account for more requests.</p>
+                </div>
+            """
+        if "401" in error_msg or "No auth credentials found" in error_msg:
+            return """
+                <div class='alert alert-warning' role='alert'>
+                    <h4 class='alert-heading'>AI Credentials Exhausted</h4>
+                   <ul>
+                        <li>Please try again after 24 hours, or insert a new API key in your settings/environment.</li>
+                    </ul>
                 </div>
             """
         return f"<div class='alert alert-warning'>Unable to generate AI insights: {error_msg}</div>"

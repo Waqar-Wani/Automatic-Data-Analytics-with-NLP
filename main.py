@@ -68,15 +68,20 @@ def upload():
 
         # Chart suggestion (minimize token usage)
         dataset_summary = overview.get('Dataset Summary', None)
-        chart_suggestion = generate_chart_suggestion(df, dataset_summary)
-        chart_suggestions = suggest_charts(df)
+        chart_suggestion = generate_chart_suggestion(df, dataset_summary)  # List of chart type names
+        chart_suggestions = suggest_charts(df)  # List of dicts with chart_type, explanation, etc.
+        from backend.data_preprocessing.data_overview import get_available_chart_types
+        available_chart_types = get_available_chart_types()
+
+        # Data preview rows (first 10 rows as list of dicts)
+        data_preview_rows = df.head(10).to_dict(orient='records')
 
         # Store DataFrame temporarily
         temp_id = str(len(get_cache()) + 1)
         set_cache(temp_id, df)
         update_filtered_cache(temp_id)
 
-        # Render HTML table
+        # Render HTML table (legacy, not used in new UI)
         html_table = df.to_html(index=False, classes='display nowrap', border=0)
         table_header = html_table.split('<thead>')[1].split('</thead>')[0]
         table_body = html_table.split('<tbody>')[1].split('</tbody>')[0]
@@ -87,7 +92,9 @@ def upload():
                                overview=overview,
                                temp_path=temp_id,
                                chart_suggestion=chart_suggestion,
-                               chart_suggestions=chart_suggestions)
+                               chart_suggestions=chart_suggestions,
+                               available_chart_types=available_chart_types,
+                               data_preview_rows=data_preview_rows)
 
     except Exception as e:
         error_msg = str(e)
