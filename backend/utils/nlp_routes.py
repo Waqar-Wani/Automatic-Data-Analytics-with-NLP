@@ -13,7 +13,7 @@ nlp_bp = Blueprint('nlp', __name__)
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = "sk-or-v1-79a666da353e45c220573ef5dea02e5350ee3709e7571d390b39a1c566a9e1b"
+OPENROUTER_API_KEY = "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"
 
 # Initialize OpenRouter client
 client = OpenAI(
@@ -153,10 +153,10 @@ def nlp_query():
                 save_all_filters(new_filters)
                 print("[DEBUG] Filters saved to file.")
                 update_filtered_cache(temp_id)
-                # Get filtered data (first 10 rows)
+                # Get filtered data (all rows, fill NaN)
                 from backend.data_preprocessing.filtered_cache import get_filtered_cache
                 filtered_df = get_filtered_cache().get(temp_id)
-                filtered_data = filtered_df.head(10).to_dict(orient='records') if filtered_df is not None else []
+                filtered_data = filtered_df.fillna('NaN').to_dict(orient='records') if filtered_df is not None else []
                 html = f"<div class='alert alert-success'>Filter(s) set and will be applied to all data previews.<br>JSON: <pre>{filter_json}</pre></div>"
             except Exception as ex:
                 print("[DEBUG] Exception during filter processing:", ex)
@@ -247,3 +247,15 @@ def analyze_data():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500 
+
+@nlp_bp.route('/get_filtered_data', methods=['POST'])
+def get_filtered_data():
+    from backend.data_preprocessing.data_cache import get_cache
+    from backend.data_preprocessing.filtered_cache import get_filtered_cache, update_filtered_cache
+    data = request.get_json()
+    temp_id = data['temp_id']
+    # Always update the filtered cache with latest filters
+    update_filtered_cache(temp_id)
+    filtered_df = get_filtered_cache().get(temp_id)
+    filtered_data = filtered_df.fillna('NaN').to_dict(orient='records') if filtered_df is not None else []
+    return jsonify({'filtered_data': filtered_data}) 

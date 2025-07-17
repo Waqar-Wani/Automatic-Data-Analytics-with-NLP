@@ -73,8 +73,8 @@ def upload():
         from backend.data_preprocessing.data_overview import get_available_chart_types
         available_chart_types = get_available_chart_types()
 
-        # Data preview rows (first 10 rows as list of dicts)
-        data_preview_rows = df.head(10).to_dict(orient='records')
+        # Data preview rows (all rows, fill NaN for missing values)
+        data_preview_rows = df.fillna('NaN').to_dict(orient='records')
 
         # Store DataFrame temporarily
         temp_id = str(len(get_cache()) + 1)

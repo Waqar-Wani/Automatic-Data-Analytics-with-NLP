@@ -77,21 +77,21 @@
 </header>
 <div class="container mx-auto p-4 md:p-8">
     <!-- Enhanced Title Section -->
-    <div class="text-center mb-10">
-        <div class="relative mx-auto max-w-3xl rounded-3xl shadow-xl overflow-hidden bg-gradient-to-br from-blue-100/80 via-indigo-100/80 to-pink-100/80 p-1">
-            <div class="bg-white/80 rounded-3xl px-8 py-8 md:py-10 flex flex-col items-center justify-center">
-                <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-indigo-500 to-pink-500 drop-shadow-lg mb-2">Dataset Overview</h1>
-                <p class="text-lg md:text-xl font-medium text-gray-700 mb-0">Review your uploaded dataset, generate charts, and ask questions with our <span class="bg-gradient-to-r from-blue-400 to-pink-400 text-transparent bg-clip-text font-bold">AI-powered tools</span>.</p>
+    <div class="text-center mb-8">
+        <div class="relative mx-auto max-w-xl rounded-xl shadow-md overflow-hidden bg-gradient-to-br from-blue-100/80 via-indigo-100/80 to-pink-100/80 p-1">
+            <div class="bg-white/80 rounded-xl px-4 py-4 flex flex-col items-center justify-center">
+                <h1 class="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-indigo-500 to-pink-500 drop-shadow-lg mb-1">Dataset Overview</h1>
+                <p class="text-base md:text-lg font-medium text-gray-700 mb-0">Review your uploaded dataset, generate charts, and ask questions with our <span class="bg-gradient-to-r from-blue-400 to-pink-400 text-transparent bg-clip-text font-bold">AI-powered tools.</span></p>
             </div>
-            <div class="absolute -top-8 -left-8 w-24 h-24 bg-gradient-to-br from-blue-200/60 to-pink-200/60 rounded-full blur-2xl opacity-60 animate-pulse"></div>
-            <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-gradient-to-tr from-pink-200/60 to-blue-200/60 rounded-full blur-2xl opacity-60 animate-pulse"></div>
+            <div class="absolute -top-6 -left-6 w-16 h-16 bg-gradient-to-br from-blue-200/60 to-pink-200/60 rounded-full blur-2xl opacity-60 animate-pulse"></div>
+            <div class="absolute -bottom-6 -right-6 w-20 h-20 bg-gradient-to-tr from-pink-200/60 to-blue-200/60 rounded-full blur-2xl opacity-60 animate-pulse"></div>
         </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <!-- Basic Information Card -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Basic Information</h2>
-            <ul class="space-y-3 text-gray-600">
+        <div class="bg-white p-3 rounded-lg shadow-md mb-4">
+            <h2 class="text-base font-semibold text-gray-700 mb-2">Basic Information</h2>
+            <ul class="space-y-2 text-gray-600 text-sm">
             {% for key, value in overview.items() %}
                 {% if key != 'Column Information' and key != 'columns' and key != 'numeric_columns' and key != 'Automated Insights' %}
                         <li><strong>{{ key }}:</strong> {{ value|safe }}</li>
@@ -100,25 +100,25 @@
         </ul>
     </div>
         <!-- Automated Insights Card -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4 flex items-center">
-                <span class="material-icons mr-2 text-blue-500">auto_awesome</span>
+        <div class="bg-white p-3 rounded-lg shadow-md mb-4">
+            <h2 class="text-base font-semibold text-gray-700 mb-2 flex items-center">
+                <span class="material-icons mr-2 text-blue-500 text-base">auto_awesome</span>
                 Automated Insights (AI-Powered)
             </h2>
-            <div class="space-y-3 text-gray-600">
+            <div class="space-y-2 text-gray-600 text-sm">
             {{ overview['Automated Insights']|replace('\n', '<br>')|safe }}
         </div>
     </div>
         <!-- AI Chart Type Names (from AI) -->
     {% if chart_suggestion and chart_suggestion|length > 0 %}
-        <div class="md:col-span-2 bg-gradient-to-r from-purple-50 to-indigo-50 p-6 rounded-lg shadow-lg mb-4">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
-                <span class="material-icons mr-2 text-purple-600 animate-pulse">insights</span>
+        <div class="md:col-span-2 bg-gradient-to-r from-purple-50 to-indigo-50 p-3 rounded-lg shadow-lg mb-3">
+            <h2 class="text-base font-semibold text-gray-800 mb-2 flex items-center">
+                <span class="material-icons mr-2 text-purple-600 animate-pulse text-base">insights</span>
                 AI Chart Suggestions
             </h2>
-            <ul class="flex flex-wrap gap-4">
+            <ul class="flex flex-wrap gap-3">
             {% for chart_type in chart_suggestion %}
-                <li class="flex items-center gap-2 px-4 py-2 bg-white rounded shadow text-blue-700 font-medium">
+                <li class="flex items-center gap-2 px-3 py-1 bg-white rounded shadow text-blue-700 font-medium text-sm">
                     <span class="material-icons">{{ chartTypeMeta[chart_type].icon if chart_type in chartTypeMeta else 'bar_chart' }}</span>
                     {{ chart_type|capitalize }}
                 </li>
@@ -127,28 +127,28 @@
     </div>
     {% endif %}
         <!-- Chart Generation Card -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Chart Generation</h2>
-            <form method="post" action="/dashboard" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        <div class="bg-white p-3 rounded-lg shadow-md mb-4">
+            <h2 class="text-base font-semibold text-gray-700 mb-2">Chart Generation</h2>
+            <form method="post" action="/dashboard" class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-2 text-sm">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1" for="chart_type">Chart Type</label>
-                    <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" id="chart_type" name="chart_type" required>
+                    <label class="block text-xs font-medium text-gray-700 mb-1" for="chart_type">Chart Type</label>
+                    <select class="mt-1 block w-full pl-2 pr-6 py-1 text-xs border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md" id="chart_type" name="chart_type" required>
                         {% for ct in available_chart_types %}
                         <option value="{{ ct }}">{{ ct|capitalize }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1" for="x_column">X-Axis (Category Column)</label>
-                    <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" id="x_column" name="x_column" required>
+                    <label class="block text-xs font-medium text-gray-700 mb-1" for="x_column">X-Axis (Category Column)</label>
+                    <select class="mt-1 block w-full pl-2 pr-6 py-1 text-xs border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md" id="x_column" name="x_column" required>
                         {% for col in overview.columns %}
                         <option value="{{ col }}">{{ col }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-span-1 md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1" for="y_column">Y-Axis (Numeric Column(s))</label>
-                    <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md h-24" id="y_column" name="y_column" multiple required>
+                    <label class="block text-xs font-medium text-gray-700 mb-1" for="y_column">Y-Axis (Numeric Column(s))</label>
+                    <select class="mt-1 block w-full pl-2 pr-6 py-1 text-xs border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md h-16" id="y_column" name="y_column" multiple required>
                         {% for col in overview.numeric_columns %}
                         <option value="{{ col }}">{{ col }}</option>
                         {% endfor %}
@@ -157,49 +157,57 @@
                 </div>
                 <input type="hidden" name="temp_path" value="{{ temp_path }}"/>
                 <div class="col-span-1 md:col-span-4">
-                    <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md transition duration-300">Generate Chart</button>
+                    <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded-md transition duration-300 text-sm">Generate Chart</button>
             </div>
         </form>
     </div>
         <!-- NLP Chatbot Card -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4 flex items-center">
-                <span class="material-icons mr-2 text-blue-500">question_answer</span>
+        <div class="bg-white p-3 rounded-lg shadow-md mb-6">
+            <h2 class="text-base font-semibold text-gray-700 mb-2 flex items-center">
+                <span class="material-icons mr-2 text-blue-500 text-base">question_answer</span>
                 Ask a Question (NLP Chatbot)
             </h2>
-            <form id="nlp-form" class="flex items-center mb-4">
-                <input class="flex-grow p-2 border border-gray-300 rounded-l-md focus:ring-blue-500 focus:border-blue-500" id="nlp-query" name="nlp-query" placeholder="e.g., 'What is the average price for Apples?'" type="text"/>
-                <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-r-md transition duration-300" type="submit">Send</button>
+            <form id="nlp-form" class="flex items-center mb-2">
+                <input class="flex-grow p-1 border border-gray-300 rounded-l-md focus:ring-blue-500 focus:border-blue-500 text-sm" id="nlp-query" name="nlp-query" placeholder="e.g., 'What is the average price for Apples?'" type="text"/>
+                <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded-r-md transition duration-300 text-sm" type="submit">Send</button>
         </form>
-            <div id="nlp-answer" class="nlp-answer mt-2 font-medium text-blue-700"></div>
-            <div>
-                <p class="text-sm font-medium text-gray-700 mb-2">Example queries you can try:</p>
-                <ul class="list-disc list-inside text-sm text-gray-600 space-y-1">
-                    <li>What is the average price for Apples?</li>
-                    <li>Which fruit has the highest quantity?</li>
-                    <li>Show me fruits from North America</li>
+            <div id="nlp-answer" class="nlp-answer mt-2 font-medium text-blue-700 text-sm"></div>
+            <div class="mt-3">
+                <p class="text-xs font-medium text-gray-700 mb-1">Example queries you can try:</p>
+                <ul class="list-disc list-inside text-xs text-gray-600 space-y-1">
+                    <li>List all males</li>
+                    <li>Show individuals with BMI &gt; 30</li>
+                    <li>Find people from North America</li>
+                    <li>Show missing values in Cholesterol</li>
+                    <li>List all with high blood pressure</li>
           </ul>
         </div>
     </div>
         <!-- Data Preview Card -->
-        <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Data Preview</h2>
-            <div class="flex justify-between items-center mb-4">
-                <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md transition duration-300 flex items-center">
-                    <span class="material-icons mr-2">save</span>
-                    Save Data
-                </button>
+        <div class="md:col-span-2 bg-white p-3 rounded-lg shadow-md mt-0 mb-4">
+            <h2 class="text-xl font-semibold text-gray-700 mb-3">Data Preview</h2>
+            <div class="flex justify-between items-center mb-2">
+                <div class="flex gap-2">
+                    <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded-md transition duration-300 flex items-center text-sm">
+                        <span class="material-icons mr-2 text-base">save</span>
+                        Save Data
+                    </button>
+                    <button id="refresh-preview" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded-md transition duration-300 flex items-center text-sm">
+                        <span class="material-icons mr-2 text-base">refresh</span>
+                        Refresh Data Preview
+                    </button>
+                </div>
                 <div class="flex items-center">
-                    <label class="mr-2 text-gray-700" for="search">Search:</label>
-                    <input class="p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" id="search" type="text"/>
+                    <label class="mr-2 text-gray-700 text-sm" for="search">Search:</label>
+                    <input class="p-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" id="search" type="text"/>
                 </div>
             </div>
             <div class="overflow-x-auto">
-                <table class="min-w-full bg-white">
+                <table class="min-w-full bg-white text-sm">
                     <thead class="bg-gray-100">
                     <tr>
                         {% for col in overview.columns %}
-                            <th class="py-2 px-4 border-b text-left text-sm font-medium text-gray-600">{{ col }}</th>
+                            <th class="py-1 px-2 border-b text-left font-medium text-gray-600">{{ col }}</th>
                         {% endfor %}
                     </tr>
                 </thead>
@@ -208,29 +216,19 @@
                             {% for row in data_preview_rows %}
                             <tr class="hover:bg-gray-50">
                                 {% for col in overview.columns %}
-                                <td class="py-2 px-4 border-b">{{ row[col] }}</td>
+                                <td class="py-1 px-2 border-b">{{ row[col] }}</td>
                                 {% endfor %}
                             </tr>
                             {% endfor %}
                         {% else %}
-                            <tr><td colspan="{{ overview.columns|length }}" class="text-center py-4 text-gray-400">No data to display.</td></tr>
+                            <tr><td colspan="{{ overview.columns|length }}" class="text-center py-2 text-gray-400">No data to display.</td></tr>
                         {% endif %}
                 </tbody>
             </table>
             </div>
-            <div class="flex justify-between items-center mt-4">
-                <span class="text-sm text-gray-600">Showing {{ page_start|default(1) }} to {{ page_end|default(data_preview_rows|length if data_preview_rows else 0) }} of {{ total_entries|default(data_preview_rows|length if data_preview_rows else 0) }} entries</span>
-                <div class="flex items-center space-x-1">
-                    <button class="px-3 py-1 border rounded-md bg-white text-gray-600 hover:bg-gray-100">Previous</button>
-                    {% if page_numbers %}
-                        {% for page in page_numbers %}
-                        <button class="px-3 py-1 border rounded-md {% if page == current_page %}bg-blue-500 text-white{% else %}bg-white text-gray-600 hover:bg-gray-100{% endif %}">{{ page }}</button>
-                        {% endfor %}
-                    {% else %}
-                        <button class="px-3 py-1 border rounded-md bg-blue-500 text-white">1</button>
-                    {% endif %}
-                    <button class="px-3 py-1 border rounded-md bg-white text-gray-600 hover:bg-gray-100">Next</button>
-                </div>
+            <div class="flex justify-between items-center mt-2">
+                <span id="data-preview-entry-count" class="text-xs text-gray-600">Showing {{ page_start|default(1) }} to {{ page_end|default(data_preview_rows|length if data_preview_rows else 0) }} of {{ total_entries|default(data_preview_rows|length if data_preview_rows else 0) }} entries</span>
+                <!-- Pagination controls are handled by JS -->
             </div>
         </div>
     </div>
@@ -242,8 +240,102 @@
 <script>
 // Define columns array for use in JS
 var columns = {{ overview.columns|tojson }};
-</script>
-<script>
+var filteredData = [];
+var currentPage = 1;
+var rowsPerPage = 5;
+var searchTerm = '';
+
+function getFilteredRows() {
+    if (!searchTerm) return filteredData;
+    var lower = searchTerm.toLowerCase();
+    return filteredData.filter(function(row) {
+        return columns.some(function(col) {
+            var val = row[col];
+            return val !== undefined && val !== null && String(val).toLowerCase().includes(lower);
+        });
+    });
+}
+
+function renderTablePage(page) {
+    var tbody = document.querySelector('table tbody');
+    tbody.innerHTML = '';
+    var rows = getFilteredRows();
+    var start = (page - 1) * rowsPerPage;
+    var end = Math.min(start + rowsPerPage, rows.length);
+    for (var i = start; i < end; i++) {
+        var row = rows[i];
+        var tr = document.createElement('tr');
+        columns.forEach(function(col) {
+            var td = document.createElement('td');
+            td.className = 'py-1 px-2 border-b';
+            td.textContent = row[col];
+            tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+    }
+    if (rows.length === 0) {
+        var tr = document.createElement('tr');
+        var td = document.createElement('td');
+        td.colSpan = columns.length;
+        td.className = 'text-center py-2 text-gray-400';
+        td.textContent = 'No data to display.';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+    }
+    // Update entry count
+    var entryCount = document.getElementById('data-preview-entry-count');
+    if (entryCount) {
+        if (rows.length === 0) {
+            entryCount.textContent = 'Showing 0 to 0 of 0 entries';
+        } else {
+            entryCount.textContent = 'Showing ' + (start + 1) + ' to ' + end + ' of ' + rows.length + ' entries';
+        }
+    }
+    renderPagination(rows.length);
+}
+
+function renderPagination(totalRows) {
+    var paginationDiv = document.querySelector('.pagination-controls');
+    if (!paginationDiv) return;
+    paginationDiv.innerHTML = '';
+    var totalPages = Math.ceil(totalRows / rowsPerPage);
+    if (totalPages <= 1) return;
+    var prevBtn = document.createElement('button');
+    prevBtn.textContent = 'Previous';
+    prevBtn.className = 'px-3 py-1 border rounded-md bg-white text-gray-600 hover:bg-gray-100';
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.onclick = function() {
+        if (currentPage > 1) {
+            currentPage--;
+            renderTablePage(currentPage);
+        }
+    };
+    paginationDiv.appendChild(prevBtn);
+    for (var i = 1; i <= totalPages; i++) {
+        var pageBtn = document.createElement('button');
+        pageBtn.textContent = i;
+        pageBtn.className = 'px-3 py-1 border rounded-md ' + (i === currentPage ? 'bg-blue-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-100');
+        (function(pageNum) {
+            pageBtn.onclick = function() {
+                currentPage = pageNum;
+                renderTablePage(currentPage);
+            };
+        })(i);
+        paginationDiv.appendChild(pageBtn);
+    }
+    var nextBtn = document.createElement('button');
+    nextBtn.textContent = 'Next';
+    nextBtn.className = 'px-3 py-1 border rounded-md bg-white text-gray-600 hover:bg-gray-100';
+    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.onclick = function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderTablePage(currentPage);
+        }
+    };
+    paginationDiv.appendChild(nextBtn);
+}
+
 window.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.chart-suggestion-card').forEach(function(card) {
         var chartType = card.querySelector('.chart-title').textContent.toLowerCase().replace(' chart', '').replace(/\s/g, '_');
@@ -253,6 +345,19 @@ window.addEventListener('DOMContentLoaded', function() {
         iconDiv.className = 'chart-icon ' + meta.color;
         iconSpan.textContent = meta.icon;
     });
+
+    // Insert a div for pagination controls after the table
+    var table = document.querySelector('table');
+    var paginationDiv = document.createElement('div');
+    paginationDiv.className = 'pagination-controls flex items-center space-x-1 mt-2';
+    table.parentNode.appendChild(paginationDiv);
+
+    // On initial load, set filteredData to initial preview rows
+    filteredData = [];
+    {% if data_preview_rows and data_preview_rows|length > 0 %}
+        filteredData = {{ data_preview_rows|tojson }};
+    {% endif %}
+    renderTablePage(1);
 
     // NLP Chatbot AJAX
     document.getElementById('nlp-form').addEventListener('submit', function(e) {
@@ -273,32 +378,36 @@ window.addEventListener('DOMContentLoaded', function() {
             }
             // Update Data Preview table if filtered data is available
             if (data.filtered_data) {
-                var tbody = document.querySelector('table tbody');
-                tbody.innerHTML = '';
-                if (data.filtered_data.length > 0) {
-                    data.filtered_data.forEach(function(row) {
-                        var tr = document.createElement('tr');
-                        columns.forEach(function(col) {
-                            var td = document.createElement('td');
-                            td.className = 'py-2 px-4 border-b';
-                            td.textContent = row[col];
-                            tr.appendChild(td);
-                        });
-                        tbody.appendChild(tr);
-                    });
-                } else {
-                    var tr = document.createElement('tr');
-                    var td = document.createElement('td');
-                    td.colSpan = columns.length;
-                    td.className = 'text-center py-4 text-gray-400';
-                    td.textContent = 'No data to display.';
-                    tr.appendChild(td);
-                    tbody.appendChild(tr);
-                }
+                filteredData = data.filtered_data;
+                currentPage = 1;
+                renderTablePage(currentPage);
             }
         });
       });
+    // Refresh Data Preview button AJAX
+    document.getElementById('refresh-preview').addEventListener('click', function(e) {
+        fetch('/nlp_query/get_filtered_data', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({temp_id: '{{ temp_path }}'})
+      })
+        .then(response => response.json())
+      .then(data => {
+            if (data.filtered_data) {
+                filteredData = data.filtered_data;
+                currentPage = 1;
+                renderTablePage(currentPage);
+        }
+      });
     });
+
+    // Add search event listener
+    document.getElementById('search').addEventListener('input', function(e) {
+        searchTerm = e.target.value;
+        currentPage = 1;
+        renderTablePage(currentPage);
+    });
+});
 </script>
 </body>
 </html>
