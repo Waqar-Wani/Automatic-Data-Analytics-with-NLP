@@ -1,64 +1,92 @@
-# Automatic-Data-Analytics-with-NLP
+# 🚀 Automatic-Data-Analytics-with-NLP
 
-**AI-Powered Data Analytics Platform with NLP Chatbot for Interactive Insights.**
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python)
+![Flask](https://img.shields.io/badge/Flask-Web%20Framework-green?logo=flask)
+![Plotly](https://img.shields.io/badge/Plotly-2D%2F3D%20Charts-orange?logo=plotly)
+![OpenAI](https://img.shields.io/badge/OpenRouter%20API-AI%20NLP%20Chatbot-purple?logo=openai)
 
-This project provides a web platform for data analysis, allowing users to upload datasets, generate visualizations, and interact with their data using natural language queries powered by an AI chatbot.
+> **AI-Powered Data Analytics Platform**
 
-**Features:**
+---
 
-*   Data Upload & Processing (CSV, Excel, JSON formats) with automatic schema detection and type inference.
-*   Automated Analysis: Summary statistics, visualizations, pattern and anomaly detection.
-*   AI-Powered Data Summarization: Generates concise summaries using the OpenRouter API.
-*   Advanced Filtering: Apply complex, multi-condition filters via natural language or structured queries.
-*   NLP Chatbot: Natural language interaction for data exploration and manipulation.
-*   Interactive Dashboard: Real-time filtering, sorting, and export options with various chart types.
-*   Secure API Integration: AI and data operations are performed securely.
-*   User Reviews: Collect and display user feedback.
-*   Extensible Architecture: Modular design for easy integration of new features.
+## 🎨 Interactive Data Analysis Platform
 
-### Setup and API Key Configuration
+**Automatic-Data-Analytics-with-NLP** is a modern, AI-powered web platform for seamless data analysis. Upload your datasets, generate beautiful 2D/3D charts (including heatmaps and interactive plots), and explore your data using a natural language chatbot—all in a compact, user-friendly dashboard.
 
-This project uses the OpenRouter API for AI functionalities. You need to obtain your own API key and configure it for the application to work.
+---
 
-1.  **Get your OpenRouter API Key:**
-    *   Visit the [OpenRouter website](https://openrouter.ai).
-    *   Sign up or log in.
-    *   Generate a new API key.
-    *   Replace the key in 3 files.
+## ✨ Key Features
 
-2.  **Configure the API Key:**
-    *   Create a file named `.env` in the root directory of this project (where `main.py` is located).
-    *   Add the following line to the `.env` file, replacing `YOUR_OPENROUTER_API_KEY` with the key you obtained:
+- 📂 **Data Upload & Processing**: CSV, Excel, JSON with auto schema detection
+- 📊 **Automated Analysis**: Summary stats, visualizations, anomaly detection
+- 🤖 **AI-Powered NLP Chatbot**: Ask questions in plain English, get instant answers & filters
+- 🗂️ **Advanced Filtering**: Real-time, multi-condition, AI-driven filtering
+- 🗺️ **Interactive Dashboard**: 2D/3D charts (bar, line, scatter, heatmap, surface, mesh, wordcloud, and more)
+- 🔥 **Heatmap & 3D Charts**: Visualize complex data with Plotly's interactive charts
+- 📝 **User Reviews**: Collect and display feedback in-app
+- 🧩 **Modular & Extensible**: Easy to add new analytics or visualization modules
+- 🛡️ **Secure API Integration**: Local data processing, environment-based API keys
 
-        ```
-        OPENROUTER_API_KEY=YOUR_OPENROUTER_API_KEY
-        ```
+---
 
-    *   This key is used in `backend/utils/openrouter_client.py` (which is called by `backend/utils/nlp_routes.py`).
 
-3.  **Test the API Connection (Optional but Recommended):**
-    *   Navigate to the `backend/utils` directory.
-    *   You can test the API connection by running the `testapi.py` script.
-    *   **Note:** The `testapi.py` script currently has a hardcoded API key for simple testing. For this script to work after setting up your `.env` file, you should also replace the hardcoded key in `backend/utils/testapi.py` with your new key.
+## ⚙️ Setup & Installation
 
+1. **Clone the repository:**
     ```bash
-    python backend/utils/testapi.py
+    git clone https://github.com/yourusername/Automatic-Data-Analytics-with-NLP.git
+    cd Automatic-Data-Analytics-with-NLP
     ```
-
-    *   If the connection is successful, you should receive a simple response from the API.
-
-### Running the Application
-
-To run the application, follow these steps:
-
-1. Install the required dependencies:
-
+2. **Install dependencies:**
     ```bash
     pip install -r requirements.txt
     ```
-
-2. Run the main Flask application file:
-
+3. **Get your OpenRouter API Key:**
+    - Sign up at [OpenRouter](https://openrouter.ai)
+    - Create a `.env` file in the project root:
+      ```
+      OPENROUTER_API_KEY=YOUR_OPENROUTER_API_KEY
+      ```
+4. **Run the app:**
     ```bash
     python main.py
     ```
+
+---
+
+## 💡 Usage Guide
+
+- **Upload Data:** CSV, Excel, or JSON files
+- **Preview & Filter:** See all rows, search, and filter in real time
+- **Generate Charts:** Choose from 2D/3D chart types (bar, line, scatter, heatmap, surface, mesh, etc.)
+- **Ask the AI:** Use the NLP Chatbot to query your data in plain English (e.g., _"List all males with BMI > 30"_)
+- **Save & Export:** Download filtered data or generated charts
+- **Leave Feedback:** Submit reviews directly in the app
+
+---
+
+##   ️ Main Technologies
+
+- **Backend:** Python, Flask, Pandas, Numpy, SQLAlchemy
+- **Frontend:** Jinja2, HTML5, Tailwind CSS, JavaScript
+- **Visualization:** Plotly (2D/3D, heatmap, wordcloud, etc.)
+- **AI/NLP:** OpenRouter API (OpenAI-compatible)
+- **Database:** SQLite (default, via SQLAlchemy ORM)
+
+---
+
+## 🙌 Credits
+
+- **Developed by:** Waqar Maqbool Wani & Inshpreet Kour Mehta
+
+---
+
+
+## 📬 Feedback & Contributions
+
+- Found a bug? Have a feature request? [Open an issue](https://github.com/yourusername/Automatic-Data-Analytics-with-NLP/issues)
+- Pull requests are welcome!
+
+---
+
+> _"Empowering everyone to analyze data with the power of AI and beautiful, interactive dashboards!"_
