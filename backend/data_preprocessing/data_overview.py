@@ -60,7 +60,7 @@ def generate_dataset_summary(df, file_name=None):
     """
     try:
         # Convert the first 3 rows to CSV string for context (limit size for prompt)
-        file_content = df.head(3).to_csv(index=False)
+        file_content = df.head(10).to_csv(index=False)
         prompt = "Give a short, easy-to-understand summary of what info this data holds—keep it under 20 words"
         messages = [
             {"role": "system", "content": "You are a helpful AI assistant. You analyze uploaded datasets and provide concise summaries."},
@@ -276,7 +276,12 @@ def generate_chart_suggestion(df, dataset_summary=None):
             match = re.search(r'(\[.*?\])', response, re.DOTALL)
             json_str = match.group(1) if match else None
         if json_str:
-            result = json.loads(json_str)
+            try:
+                result = json.loads(json_str)
+            except Exception:
+                # Fallback: replace single quotes with double quotes and try again
+                json_str_fixed = json_str.replace("'", '"')
+                result = json.loads(json_str_fixed)
             # Only keep chart types that are in available
             filtered = [ct for ct in result if ct in available]
             return filtered

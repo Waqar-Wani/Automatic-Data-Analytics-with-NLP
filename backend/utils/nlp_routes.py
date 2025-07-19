@@ -13,11 +13,11 @@ nlp_bp = Blueprint('nlp', __name__)
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 
 # Initialize OpenRouter client
 client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
+    base_url="https://api.perplexity.ai",
     api_key=OPENROUTER_API_KEY,
 )
 
