@@ -70,7 +70,7 @@
 - **Backend:** Python, Flask, Pandas, Numpy, SQLAlchemy
 - **Frontend:** Jinja2, HTML5, Tailwind CSS, JavaScript
 - **Visualization:** Plotly (2D/3D, heatmap, wordcloud, etc.)
-- **AI/NLP:** OpenRouter API (OpenAI-compatible)
+- **AI/NLP:** Perplexity API (Sonar-Pro)
 - **Database:** SQLite (default, via SQLAlchemy ORM)
 
 ---
