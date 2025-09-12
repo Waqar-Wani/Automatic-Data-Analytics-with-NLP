@@ -6,15 +6,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 
 # Initialize OpenRouter client
 client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
+    base_url="https://api.perplexity.ai",
     api_key=OPENROUTER_API_KEY,
 )
 
-MODEL_NAME = "mistralai/mistral-small-3.2-24b-instruct:free"
+MODEL_NAME = "sonar-pro"
 
 def call_openrouter_api(messages, model=MODEL_NAME, max_tokens=500):
     if not OPENROUTER_API_KEY:

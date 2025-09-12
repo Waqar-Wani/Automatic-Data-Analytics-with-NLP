@@ -13,11 +13,11 @@ nlp_bp = Blueprint('nlp', __name__)
 load_dotenv()
 
 # Get OpenRouter API key
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 
 # Initialize OpenRouter client
 client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
+    base_url="https://api.perplexity.ai",
     api_key=OPENROUTER_API_KEY,
 )
 
@@ -38,6 +38,17 @@ def parse_api_error_message(e):
         <a href='https://openrouter.ai/credits' target='_blank'>Add Credits to OpenRouter</a>"""
     return f"<b>OpenRouter API Error:</b> {msg}"
 
+def extract_json_from_code_block(text):
+    # Extract JSON from a code block if present
+    match = re.search(r'```json\s*(\{[\s\S]*?\})\s*```', text)
+    if match:
+        return match.group(1)
+    # Fallback: try to find any JSON object
+    match = re.search(r'(\{[\s\S]*?\})', text)
+    if match:
+        return match.group(1)
+    return None
+
 # NLP Query Route
 @nlp_bp.route('/nlp_query', methods=['POST'])
 def nlp_query():
@@ -56,20 +67,22 @@ def nlp_query():
     categorical_cols = df.select_dtypes(include=['object', 'category']).columns.tolist()
     schema = ', '.join([f'{col} ({str(dtype)})' for col, dtype in zip(df.columns, df.dtypes)])
     
-    # Stronger system prompt for valid JSON
+    # Updated prompt for both answer and filter
     messages = [
         {
         "role": "system",
         "content": (
-            "You are a data analyst assistant. Given a user's question, return a JSON array of filter conditions (not code) "
-            "that can be used to filter a pandas DataFrame. Each filter should be a JSON object with \"column\", \"operator\", and \"value\" keys. "
+            "You are a data analyst assistant. Given a user's question and the dataset schema, always reply in this JSON format: "
+            "{\"answer\": <short plain-language answer>, \"filters\": <JSON array of filter conditions>} "
+            "The 'answer' should be a short, clear response to the user's question, using the data context provided. "
+            "The 'filters' array should be suitable for filtering a pandas DataFrame, with each filter as a JSON object with 'column', 'operator', and 'value'. "
             "Use only double quotes for all keys and string values, and use operators like '==', '!=', '>', '<', '>=', '<=', 'in', 'not in'. "
-            "Do not include any explanation or code, only the JSON array."
+            "If no filter is needed, return an empty array for 'filters'."
         )
     },
     {
         "role": "user",
-        "content": f"""Analyze this dataset and answer the user's question by returning a JSON array of filter conditions.\n\nDataset Information:\n- Number of rows: {row_count}\n- Number of columns: {col_count}\n- Numeric columns: {', '.join(numeric_cols) if numeric_cols else 'None'}\n- Categorical columns: {', '.join(categorical_cols) if categorical_cols else 'None'}\n- Schema: {schema}\n\nUser question: {query}\n\nRespond ONLY with the JSON array of filter conditions."""
+        "content": f"""Analyze this dataset and answer the user's question.\n\nDataset Information:\n- Number of rows: {row_count}\n- Number of columns: {col_count}\n- Numeric columns: {', '.join(numeric_cols) if numeric_cols else 'None'}\n- Categorical columns: {', '.join(categorical_cols) if categorical_cols else 'None'}\n- Schema: {schema}\n\nUser question: {query}\n\nRespond ONLY with a JSON object with 'answer' and 'filters' fields as described above."""
     }
     ]
 
@@ -91,17 +104,46 @@ def nlp_query():
     try:
         try:
             ai_response = call_openrouter_api(messages)
+            print("[DEBUG] Raw AI response:", ai_response)
         except Exception as e:
             print(f"OpenRouter API error: {str(e)}")
             return jsonify({'html': parse_api_error_message(e)})
 
-        # Extract JSON array from AI response
-        json_match = re.search(r'\[.*?\]', ai_response, re.DOTALL)
-        filter_json = json_match.group(0) if json_match else None
+        # Extract answer and filters from AI response
+        answer = None
+        filter_json = None
+        ai_json = None
+        # 1. Try to parse as JSON directly
+        try:
+            ai_json = json.loads(ai_response)
+            print("[DEBUG] Parsed as JSON directly:", ai_json)
+            answer = ai_json.get('answer', None)
+            filter_json = json.dumps(ai_json.get('filters', []), indent=2)
+        except Exception:
+            # 2. Try to extract JSON from code block
+            ai_json_str = extract_json_from_code_block(ai_response)
+            print("[DEBUG] Extracted JSON from code block:", ai_json_str)
+            if ai_json_str:
+                try:
+                    ai_json = json.loads(ai_json_str)
+                    print("[DEBUG] Parsed JSON from code block:", ai_json)
+                    answer = ai_json.get('answer', None)
+                    filter_json = json.dumps(ai_json.get('filters', []), indent=2)
+                except Exception as e:
+                    print("[DEBUG] Failed to parse JSON from code block:", e)
+                    filter_json = None
+                    answer = None
+            else:
+                # 3. Fallback: try to extract JSON array for filters as before
+                json_match = re.search(r'\[.*?\]', ai_response, re.DOTALL)
+                filter_json = json_match.group(0) if json_match else None
+                print("[DEBUG] Fallback filter_json:", filter_json)
+                answer = None
         html = ""
         if filter_json:
             try:
                 new_filters = json.loads(filter_json)
+                print("[DEBUG] Parsed filters:", new_filters)
                 # Auto-fix if list of strings
                 if new_filters and isinstance(new_filters[0], str):
                     new_filters = fix_stringified_filters(new_filters)
@@ -109,16 +151,25 @@ def nlp_query():
                 if isinstance(new_filters, dict):
                     new_filters = [new_filters]
                 save_all_filters(new_filters)
+                print("[DEBUG] Filters saved to file.")
                 update_filtered_cache(temp_id)
-                html = f"<div class='alert alert-success'>Filter(s) set and will be applied to all data previews.<br>JSON: <pre>{json.dumps(new_filters, indent=2)}</pre></div>"
+                # Get filtered data (all rows, fill NaN)
+                from backend.data_preprocessing.filtered_cache import get_filtered_cache
+                filtered_df = get_filtered_cache().get(temp_id)
+                filtered_data = filtered_df.fillna('NaN').to_dict(orient='records') if filtered_df is not None else []
+                html = f"<div class='alert alert-success'>Filter(s) set and will be applied to all data previews.<br>JSON: <pre>{filter_json}</pre></div>"
             except Exception as ex:
+                print("[DEBUG] Exception during filter processing:", ex)
                 html = f"<div class='alert alert-danger'>Failed to parse filter JSON: {str(ex)}<br>AI response: <pre>{ai_response}</pre></div>"
+                filtered_data = []
         else:
             html = f"<div class='alert alert-warning'>No valid JSON filter found in AI response.<br>AI response: <pre>{ai_response}</pre></div>"
+            filtered_data = []
 
         return jsonify({
             'html': html,
-            'filtered_data': None
+            'filtered_data': filtered_data,
+            'nlp_answer': answer
         })
     except Exception as e:
         html = parse_api_error_message(e)
@@ -196,3 +247,15 @@ def analyze_data():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500 
+
+@nlp_bp.route('/get_filtered_data', methods=['POST'])
+def get_filtered_data():
+    from backend.data_preprocessing.data_cache import get_cache
+    from backend.data_preprocessing.filtered_cache import get_filtered_cache, update_filtered_cache
+    data = request.get_json()
+    temp_id = data['temp_id']
+    # Always update the filtered cache with latest filters
+    update_filtered_cache(temp_id)
+    filtered_df = get_filtered_cache().get(temp_id)
+    filtered_data = filtered_df.fillna('NaN').to_dict(orient='records') if filtered_df is not None else []
+    return jsonify({'filtered_data': filtered_data}) 

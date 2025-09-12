@@ -1,313 +1,364 @@
-{% extends "base.html" %}
-{% block title %}Data Preview | AI-Powered Data Analytics{% endblock %}
-{% block head %}
-<!-- DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/select/1.7.0/css/select.dataTables.min.css">
-<!-- Custom CSS -->
-<link rel="stylesheet" href="{{ url_for('static', filename='css/preview.css') }}">
-
-{% endblock %}
-{% block content %}
-<section class="preview-hero">
-    <h2>Dataset Overview</h2>
-    <p>Review your uploaded dataset, generate charts, and ask questions with our AI-powered tools.</p>
-</section>
-<div class="preview-card-container">
-    <div class="preview-card">
-        <h3>Basic Information</h3>
-        <ul class="list-group list-group-flush mb-3">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Dataset Overview</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <script>
+      // Chart type to icon and color mapping
+      window.chartTypeMeta = {
+        bar:      {icon: 'bar_chart', color: 'bg-gradient-to-br from-blue-400 to-blue-600'},
+        line:     {icon: 'show_chart', color: 'bg-gradient-to-br from-green-400 to-green-600'},
+        scatter:  {icon: 'scatter_plot', color: 'bg-gradient-to-br from-red-400 to-red-600'},
+        pie:      {icon: 'pie_chart', color: 'bg-gradient-to-br from-yellow-400 to-yellow-600'},
+        histogram:{icon: 'stacked_bar_chart', color: 'bg-gradient-to-br from-pink-400 to-pink-600'},
+        box:      {icon: 'check_box_outline_blank', color: 'bg-gradient-to-br from-purple-400 to-purple-600'},
+        heatmap:  {icon: 'grid_on', color: 'bg-gradient-to-br from-orange-400 to-orange-600'},
+        area:     {icon: 'area_chart', color: 'bg-gradient-to-br from-teal-400 to-teal-600'},
+        bubble:   {icon: 'bubble_chart', color: 'bg-gradient-to-br from-cyan-400 to-cyan-600'},
+        donut:    {icon: 'donut_large', color: 'bg-gradient-to-br from-yellow-400 to-pink-600'},
+        stacked_bar: {icon: 'stacked_bar_chart', color: 'bg-gradient-to-br from-blue-400 to-pink-600'},
+        horizontal_bar: {icon: 'bar_chart', color: 'bg-gradient-to-br from-gray-400 to-gray-600'},
+        violin:   {icon: 'graphic_eq', color: 'bg-gradient-to-br from-indigo-400 to-indigo-600'},
+        treemap:  {icon: 'account_tree', color: 'bg-gradient-to-br from-green-400 to-green-600'},
+        sunburst: {icon: 'flare', color: 'bg-gradient-to-br from-yellow-400 to-orange-600'},
+        funnel:   {icon: 'filter_alt', color: 'bg-gradient-to-br from-pink-400 to-yellow-600'},
+        waterfall:{icon: 'waves', color: 'bg-gradient-to-br from-blue-400 to-blue-800'},
+        contour:  {icon: 'timeline', color: 'bg-gradient-to-br from-purple-400 to-pink-600'},
+        density_heatmap: {icon: 'grid_on', color: 'bg-gradient-to-br from-orange-400 to-orange-600'},
+        polar:    {icon: 'adjust', color: 'bg-gradient-to-br from-blue-400 to-green-600'},
+        radar:    {icon: 'radar', color: 'bg-gradient-to-br from-indigo-400 to-blue-600'},
+        parallel_coordinates: {icon: 'device_hub', color: 'bg-gradient-to-br from-pink-400 to-blue-600'},
+        parallel_categories: {icon: 'category', color: 'bg-gradient-to-br from-green-400 to-yellow-600'},
+        scatter_3d: {icon: 'scatter_plot', color: 'bg-gradient-to-br from-red-400 to-blue-600'},
+        surface_3d: {icon: 'terrain', color: 'bg-gradient-to-br from-green-400 to-blue-600'},
+        line_3d: {icon: 'show_chart', color: 'bg-gradient-to-br from-blue-400 to-green-600'},
+        mesh_3d: {icon: 'grid_3x3', color: 'bg-gradient-to-br from-gray-400 to-blue-600'},
+        wordcloud: {icon: 'cloud', color: 'bg-gradient-to-br from-blue-400 to-gray-600'}
+      };
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .chart-suggestion-card {
+                @apply bg-white p-4 rounded-lg shadow-md transition-all duration-300 ease-in-out cursor-pointer hover:shadow-xl hover:-translate-y-1;
+            }
+            .chart-suggestion-card .chart-icon {
+                @apply w-12 h-12 flex items-center justify-center rounded-full text-white;
+            }
+            .chart-suggestion-card .chart-title {
+                @apply mt-3 font-semibold text-gray-800;
+            }
+            .chart-suggestion-card .chart-description {
+                @apply mt-1 text-sm text-gray-500;
+            }
+            .chart-suggestion-card .chart-action {
+                @apply mt-3 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans" style="background: linear-gradient(135deg, #6ee7f7 0%, #a7bfff 50%, #fbc2eb 100%); min-height: 100vh;">
+<!-- Header -->
+<header class="flex flex-col md:flex-row items-center justify-between py-6 px-4 md:px-12 bg-white/80 backdrop-blur-md shadow-lg mb-8 rounded-b-2xl border-b border-blue-100">
+    <div class="logo flex items-center gap-3 text-2xl font-bold text-blue-700 drop-shadow-lg">
+        <img src="/static/images/analytics-head.png" alt="Analytics Icon" style="height:2.2rem;display:inline-block;margin-right:0.7rem;vertical-align:middle;">
+        AI-Powered Data Analytics
+    </div>
+    <nav class="flex gap-6 mt-4 md:mt-0">
+        <a href="/" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Home</a>
+        <a href="/data-source" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Data Source</a>
+        <a href="/about-project" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">About Project AI</a>
+        <a href="/project-authors" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Project Authors</a>
+        <a href="/user-reviews" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">User Reviews</a>
+    </nav>
+</header>
+<div class="container mx-auto p-4 md:p-8">
+    <!-- Enhanced Title Section -->
+    <div class="text-center mb-8">
+        <div class="relative mx-auto max-w-xl rounded-xl shadow-md overflow-hidden bg-gradient-to-br from-blue-100/80 via-indigo-100/80 to-pink-100/80 p-1">
+            <div class="bg-white/80 rounded-xl px-4 py-4 flex flex-col items-center justify-center">
+                <h1 class="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-indigo-500 to-pink-500 drop-shadow-lg mb-1">Dataset Overview</h1>
+                <p class="text-base md:text-lg font-medium text-gray-700 mb-0">Review your uploaded dataset, generate charts, and ask questions with our <span class="bg-gradient-to-r from-blue-400 to-pink-400 text-transparent bg-clip-text font-bold">AI-powered tools.</span></p>
+            </div>
+            <div class="absolute -top-6 -left-6 w-16 h-16 bg-gradient-to-br from-blue-200/60 to-pink-200/60 rounded-full blur-2xl opacity-60 animate-pulse"></div>
+            <div class="absolute -bottom-6 -right-6 w-20 h-20 bg-gradient-to-tr from-pink-200/60 to-blue-200/60 rounded-full blur-2xl opacity-60 animate-pulse"></div>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Basic Information Card -->
+        <div class="bg-white p-3 rounded-lg shadow-md mb-4">
+            <h2 class="text-base font-semibold text-gray-700 mb-2">Basic Information</h2>
+            <ul class="space-y-2 text-gray-600 text-sm">
             {% for key, value in overview.items() %}
-                {% if key != 'Column Information' and key != 'columns' and key != 'numeric_columns' %}
-                    {% if key == 'Dataset Summary' %}
-                        <li class="list-group-item"><strong>{{ key }}:</strong> {{ value|safe }}</li>
-                    {% else %}
-                        <li class="list-group-item"><strong>{{ key }}:</strong> {{ value }}</li>
-                    {% endif %}
+                {% if key != 'Column Information' and key != 'columns' and key != 'numeric_columns' and key != 'Automated Insights' %}
+                        <li><strong>{{ key }}:</strong> {{ value|safe }}</li>
                 {% endif %}
             {% endfor %}
         </ul>
     </div>
-    <div class="preview-card">
-        <h3>Generate a Chart</h3>
-        <form method="POST" action="/dashboard">
-            <input type="hidden" name="temp_path" value="{{ temp_path }}">
-            <div class="chart-form-flex mb-3">
+        <!-- Automated Insights Card -->
+        <div class="bg-white p-3 rounded-lg shadow-md mb-4">
+            <h2 class="text-base font-semibold text-gray-700 mb-2 flex items-center">
+                <span class="material-icons mr-2 text-blue-500 text-base">auto_awesome</span>
+                Automated Insights (AI-Powered)
+            </h2>
+            <div class="space-y-2 text-gray-600 text-sm">
+            {{ overview['Automated Insights']|replace('\n', '<br>')|safe }}
+        </div>
+    </div>
+        <!-- AI Chart Type Names (from AI) -->
+    {% if chart_suggestion and chart_suggestion|length > 0 %}
+        <div class="md:col-span-2 bg-gradient-to-r from-purple-50 to-indigo-50 p-3 rounded-lg shadow-lg mb-3">
+            <h2 class="text-base font-semibold text-gray-800 mb-2 flex items-center">
+                <span class="material-icons mr-2 text-purple-600 animate-pulse text-base">insights</span>
+                AI Chart Suggestions
+            </h2>
+            <ul class="flex flex-wrap gap-3">
+            {% for chart_type in chart_suggestion %}
+                <li class="flex items-center gap-2 px-3 py-1 bg-white rounded shadow text-blue-700 font-medium text-sm">
+                    <span class="material-icons">{{ chartTypeMeta[chart_type].icon if chart_type in chartTypeMeta else 'bar_chart' }}</span>
+                    {{ chart_type|capitalize }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+        <!-- Chart Generation Card -->
+        <div class="bg-white p-3 rounded-lg shadow-md mb-4">
+            <h2 class="text-base font-semibold text-gray-700 mb-2">Chart Generation</h2>
+            <form method="post" action="/dashboard" class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-2 text-sm">
                 <div>
-                    <label for="chart_type" class="form-label">Chart Type</label>
-                    <select name="chart_type" id="chart_type" class="form-select" required>
-                        <!-- Basic Charts -->
-                        <optgroup label="Basic Charts">
-                            <option value="bar">Bar Chart</option>
-                            <option value="line">Line Chart</option>
-                            <option value="scatter">Scatter Plot</option>
-                            <option value="pie">Pie Chart</option>
-                            <option value="histogram">Histogram</option>
-                            <option value="box">Box Plot</option>
-                            <option value="heatmap">Heatmap</option>
-                        </optgroup>
-                        <!-- Advanced Charts -->
-                        <optgroup label="Advanced Charts">
-                            <option value="area">Area Chart</option>
-                            <option value="bubble">Bubble Chart</option>
-                            <option value="donut">Donut Chart</option>
-                            <option value="stacked_bar">Stacked Bar Chart</option>
-                            <option value="horizontal_bar">Horizontal Bar Chart</option>
-                            <option value="violin">Violin Plot</option>
-                            <option value="treemap">Treemap</option>
-                            <option value="sunburst">Sunburst Chart</option>
-                            <option value="funnel">Funnel Chart</option>
-                            <option value="waterfall">Waterfall Chart</option>
-                        </optgroup>
-                        <!-- 2D Interactive Charts -->
-                        <optgroup label="2D Interactive Charts">
-                            <option value="contour">Contour Plot</option>
-                            <option value="density_heatmap">Density Heatmap</option>
-                            <option value="polar">Polar Chart</option>
-                            <option value="radar">Radar Chart</option>
-                            <option value="parallel_coordinates">Parallel Coordinates</option>
-                            <option value="parallel_categories">Parallel Categories</option>
-                        </optgroup>
-                        <!-- 3D Charts -->
-                        <optgroup label="3D Charts">
-                            <option value="scatter_3d">3D Scatter Plot</option>
-                            <option value="surface_3d">3D Surface Plot</option>
-                            <option value="line_3d">3D Line Plot</option>
-                            <option value="mesh_3d">3D Mesh Plot</option>
-                        </optgroup>
+                    <label class="block text-xs font-medium text-gray-700 mb-1" for="chart_type">Chart Type</label>
+                    <select class="mt-1 block w-full pl-2 pr-6 py-1 text-xs border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md" id="chart_type" name="chart_type" required>
+                        {% for ct in available_chart_types %}
+                        <option value="{{ ct }}">{{ ct|capitalize }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div>
-                    <label for="x_column" class="form-label">X-Axis (Category Column)</label>
-                    <select name="x_column" id="x_column" class="form-select" required>
+                    <label class="block text-xs font-medium text-gray-700 mb-1" for="x_column">X-Axis (Category Column)</label>
+                    <select class="mt-1 block w-full pl-2 pr-6 py-1 text-xs border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md" id="x_column" name="x_column" required>
                         {% for col in overview.columns %}
                         <option value="{{ col }}">{{ col }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <div>
-                    <label for="y_column" class="form-label">Y-Axis (Numeric Column(s))</label>
-                    <select name="y_column" id="y_column" class="form-select" multiple required>
+                <div class="col-span-1 md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-700 mb-1" for="y_column">Y-Axis (Numeric Column(s))</label>
+                    <select class="mt-1 block w-full pl-2 pr-6 py-1 text-xs border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md h-16" id="y_column" name="y_column" multiple required>
                         {% for col in overview.numeric_columns %}
                         <option value="{{ col }}">{{ col }}</option>
                         {% endfor %}
                     </select>
-                    <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple columns.</small>
+                    <p class="text-xs text-gray-500 mt-1">Hold Ctrl (or Cmd on Mac) to select multiple</p>
                 </div>
+                <input type="hidden" name="temp_path" value="{{ temp_path }}"/>
+                <div class="col-span-1 md:col-span-4">
+                    <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded-md transition duration-300 text-sm">Generate Chart</button>
             </div>
-            <button type="submit" class="preview-btn">Generate Chart</button>
         </form>
     </div>
-    <div class="preview-card">
-        <h3>Ask a Question (NLP Chatbot)</h3>
-        <form id="nlp-form">
-          <div class="input-group">
-            <input type="text" id="nlp-query" class="form-control" placeholder="Ask a question about your data...">
-            <button class="preview-btn" type="submit">Send</button>
-          </div>
+        <!-- NLP Chatbot Card -->
+        <div class="bg-white p-3 rounded-lg shadow-md mb-6">
+            <h2 class="text-base font-semibold text-gray-700 mb-2 flex items-center">
+                <span class="material-icons mr-2 text-blue-500 text-base">question_answer</span>
+                Ask a Question (NLP Chatbot)
+            </h2>
+            <form id="nlp-form" class="flex items-center mb-2">
+                <input class="flex-grow p-1 border border-gray-300 rounded-l-md focus:ring-blue-500 focus:border-blue-500 text-sm" id="nlp-query" name="nlp-query" placeholder="e.g., 'What is the average price for Apples?'" type="text"/>
+                <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded-r-md transition duration-300 text-sm" type="submit">Send</button>
         </form>
-        <div id="nlp-response" class="mt-3"></div>
-        <div class="nlp-examples" style="margin-top: 18px;">
-          <strong>Example queries you can try:</strong>
-          <ul style="margin-top: 8px;">
-            <li>Show only rows where Age is less than 30</li>
-            <li>List all entries where Sex is female</li>
-            <li>Filter data for Region equal to North America</li>
-            <li>Show records where BMI is greater than 25 and Ethnicity is Asian</li>
-            <li>Display rows where Blood Pressure Systolic is above 120</li>
+            <div id="nlp-answer" class="nlp-answer mt-2 font-medium text-blue-700 text-sm"></div>
+            <div class="mt-3">
+                <p class="text-xs font-medium text-gray-700 mb-1">Example queries you can try:</p>
+                <ul class="list-disc list-inside text-xs text-gray-600 space-y-1">
+                    <li>List all males</li>
+                    <li>Show individuals with BMI &gt; 30</li>
+                    <li>Find people from North America</li>
+                    <li>Show missing values in Cholesterol</li>
+                    <li>List all with high blood pressure</li>
           </ul>
         </div>
     </div>
-    <div class="preview-card">
-        <h3>Data Preview</h3>
-        <div class="data-container">
-            <button id="save-filtered-btn" class="preview-btn" style="margin-bottom: 10px;">Save Data</button>
-            <table id="data-table" class="display nowrap table table-bordered" style="width:100%">
-                <thead>
+        <!-- Data Preview Card -->
+        <div class="md:col-span-2 bg-white p-3 rounded-lg shadow-md mt-0 mb-4">
+            <h2 class="text-xl font-semibold text-gray-700 mb-3">Data Preview</h2>
+            <div class="flex justify-between items-center mb-2">
+                <div class="flex gap-2">
+                    <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded-md transition duration-300 flex items-center text-sm">
+                        <span class="material-icons mr-2 text-base">save</span>
+                        Save Data
+                    </button>
+                    <button id="refresh-preview" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded-md transition duration-300 flex items-center text-sm">
+                        <span class="material-icons mr-2 text-base">refresh</span>
+                        Refresh Data Preview
+                    </button>
+                </div>
+                <div class="flex items-center">
+                    <label class="mr-2 text-gray-700 text-sm" for="search">Search:</label>
+                    <input class="p-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" id="search" type="text"/>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white text-sm">
+                    <thead class="bg-gray-100">
                     <tr>
                         {% for col in overview.columns %}
-                        <th>{{ col }}</th>
+                            <th class="py-1 px-2 border-b text-left font-medium text-gray-600">{{ col }}</th>
                         {% endfor %}
                     </tr>
                 </thead>
-                <tbody>
+                    <tbody class="text-gray-700">
+                        {% if data_preview_rows and data_preview_rows|length > 0 %}
+                            {% for row in data_preview_rows %}
+                            <tr class="hover:bg-gray-50">
+                                {% for col in overview.columns %}
+                                <td class="py-1 px-2 border-b">{{ row[col] }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="{{ overview.columns|length }}" class="text-center py-2 text-gray-400">No data to display.</td></tr>
+                        {% endif %}
                 </tbody>
             </table>
+            </div>
+            <div class="flex justify-between items-center mt-2">
+                <span id="data-preview-entry-count" class="text-xs text-gray-600">Showing {{ page_start|default(1) }} to {{ page_end|default(data_preview_rows|length if data_preview_rows else 0) }} of {{ total_entries|default(data_preview_rows|length if data_preview_rows else 0) }} entries</span>
+                <!-- Pagination controls are handled by JS -->
+            </div>
         </div>
     </div>
 </div>
-<!-- jQuery + DataTables -->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.4/js/buttons.print.min.js"></script>
-<script id="columns-json" type="application/json">
-    {{ overview.columns | tojson | safe }}
-</script>
+<!-- Footer -->
+<footer class="mt-12 py-8 bg-gradient-to-r from-blue-100/80 via-indigo-100/80 to-pink-100/80 shadow-lg rounded-t-2xl text-center text-gray-700 text-base font-medium tracking-wide border-t border-blue-100">
+    Project Team: <span class="font-bold text-blue-600">Waqar Maqbool Wani</span> & <span class="font-bold text-pink-600">Inshpreet Kour Mehta</span> | Guided by <span class="font-bold text-indigo-600">NIELIT</span>
+</footer>
 <script>
-    // DataTables AJAX
-    var columns = JSON.parse(document.getElementById('columns-json').textContent)
-        .map(function(col) { return {data: col}; });
-    $(document).ready(function () {
-        $('#data-table').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: '/data/{{ temp_path }}',
-                type: 'GET',
-                dataSrc: 'data'
-            },
-            columns: columns,
-            scrollX: true,
-            pageLength: 25,
-            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-            stateSave: true,
-            order: []
-        });
+// Define columns array for use in JS
+var columns = {{ overview.columns|tojson }};
+var filteredData = [];
+var currentPage = 1;
+var rowsPerPage = 5;
+var searchTerm = '';
 
-        // Save Filtered Data Button AJAX
-        document.getElementById('save-filtered-btn').addEventListener('click', function() {
-            const tempId = '{{ temp_path }}';
-            fetch(`/save_filtered_data/${tempId}`, {
-                method: 'GET',
-            })
-            .then(response => response.blob())
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = 'filtered_data.csv'; // You can make this dynamic later
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-            })
-            .catch(() => alert('Error saving filtered data.'));
+function getFilteredRows() {
+    if (!searchTerm) return filteredData;
+    var lower = searchTerm.toLowerCase();
+    return filteredData.filter(function(row) {
+        return columns.some(function(col) {
+            var val = row[col];
+            return val !== undefined && val !== null && String(val).toLowerCase().includes(lower);
         });
-
     });
-    // Dynamic chart form fields
-    function updateFormFields() {
-        var chartType = document.getElementById('chart_type').value;
-        var xCol = document.getElementById('x_column');
-        var yCol = document.getElementById('y_column');
-        var yColHelp = yCol.parentElement.querySelector('.form-text');
-        var submitBtn = document.querySelector('button[type="submit"]');
-        
-        // Reset all fields
-        xCol.parentElement.style.display = '';
-        yCol.parentElement.style.display = '';
-        yCol.multiple = false;
-        yCol.required = true;
-        yColHelp.textContent = 'Hold Ctrl (Cmd on Mac) to select multiple columns.';
-        submitBtn.disabled = false;
+}
 
-        // Add validation function
-        function validateSelection() {
-            var selectedColumns = Array.from(yCol.selectedOptions).map(opt => opt.value);
-            if (chartType === 'scatter_3d' || chartType === 'surface_3d' || 
-                chartType === 'line_3d' || chartType === 'mesh_3d') {
-                if (selectedColumns.length !== 2) {
-                    yColHelp.innerHTML = '<span style="color: #ff4444;">Please select exactly 2 numeric columns: Y-axis and Z-axis</span>';
-                    submitBtn.disabled = true;
-                    return false;
-                }
-            } else if (chartType === 'bubble') {
-                if (selectedColumns.length !== 2) {
-                    yColHelp.innerHTML = '<span style="color: #ff4444;">Please select exactly 2 numeric columns: Y-axis and bubble size</span>';
-                    submitBtn.disabled = true;
-                    return false;
-                }
-            }
-            submitBtn.disabled = false;
-            return true;
-        }
-
-        // Configure fields based on chart type
-        switch(chartType) {
-            case 'pie':
-            case 'donut':
-            case 'treemap':
-            case 'sunburst':
-            case 'funnel':
-            case 'waterfall':
-                xCol.parentElement.style.display = '';
-                yCol.parentElement.style.display = '';
-                yCol.multiple = false;
-                yColHelp.textContent = 'Select a single numeric column for values.';
-                break;
-
-            case 'histogram':
-                xCol.parentElement.style.display = '';
-                yCol.parentElement.style.display = 'none';
-                yCol.required = false;
-                break;
-
-            case 'scatter':
-            case 'box':
-            case 'violin':
-            case 'heatmap':
-            case 'contour':
-            case 'density_heatmap':
-                xCol.parentElement.style.display = '';
-                yCol.parentElement.style.display = '';
-                yCol.multiple = false;
-                yColHelp.textContent = 'Select a single numeric column.';
-                break;
-
-            case 'bubble':
-                xCol.parentElement.style.display = '';
-                yCol.parentElement.style.display = '';
-                yCol.multiple = true;
-                yColHelp.innerHTML = 'Select exactly 2 columns:<br>1. Y-axis value<br>2. Bubble size';
-                break;
-
-            case 'scatter_3d':
-            case 'surface_3d':
-            case 'line_3d':
-            case 'mesh_3d':
-                xCol.parentElement.style.display = '';
-                yCol.parentElement.style.display = '';
-                yCol.multiple = true;
-                yColHelp.innerHTML = 'Select exactly 2 columns:<br>1. Y-axis value<br>2. Z-axis value';
-                break;
-
-            case 'parallel_coordinates':
-            case 'parallel_categories':
-                xCol.parentElement.style.display = '';
-                yCol.parentElement.style.display = '';
-                yCol.multiple = true;
-                yColHelp.textContent = 'Select multiple columns to show relationships between them.';
-                break;
-
-            case 'polar':
-            case 'radar':
-                xCol.parentElement.style.display = '';
-                yCol.parentElement.style.display = '';
-                yCol.multiple = true;
-                yColHelp.textContent = 'Select one or more numeric columns for radial values.';
-                break;
-
-            default:
-                xCol.parentElement.style.display = '';
-                yCol.parentElement.style.display = '';
-                yCol.multiple = true;
-                yColHelp.textContent = 'Hold Ctrl (Cmd on Mac) to select multiple columns.';
-        }
-
-        // Add event listener for column selection
-        yCol.addEventListener('change', validateSelection);
+function renderTablePage(page) {
+    var tbody = document.querySelector('table tbody');
+    tbody.innerHTML = '';
+    var rows = getFilteredRows();
+    var start = (page - 1) * rowsPerPage;
+    var end = Math.min(start + rowsPerPage, rows.length);
+    for (var i = start; i < end; i++) {
+        var row = rows[i];
+        var tr = document.createElement('tr');
+        columns.forEach(function(col) {
+            var td = document.createElement('td');
+            td.className = 'py-1 px-2 border-b';
+            td.textContent = row[col];
+            tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
     }
+    if (rows.length === 0) {
+        var tr = document.createElement('tr');
+        var td = document.createElement('td');
+        td.colSpan = columns.length;
+        td.className = 'text-center py-2 text-gray-400';
+        td.textContent = 'No data to display.';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+    }
+    // Update entry count
+    var entryCount = document.getElementById('data-preview-entry-count');
+    if (entryCount) {
+        if (rows.length === 0) {
+            entryCount.textContent = 'Showing 0 to 0 of 0 entries';
+        } else {
+            entryCount.textContent = 'Showing ' + (start + 1) + ' to ' + end + ' of ' + rows.length + ' entries';
+        }
+    }
+    renderPagination(rows.length);
+}
 
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('chart_type').addEventListener('change', updateFormFields);
-        updateFormFields();
+function renderPagination(totalRows) {
+    var paginationDiv = document.querySelector('.pagination-controls');
+    if (!paginationDiv) return;
+    paginationDiv.innerHTML = '';
+    var totalPages = Math.ceil(totalRows / rowsPerPage);
+    if (totalPages <= 1) return;
+    var prevBtn = document.createElement('button');
+    prevBtn.textContent = 'Previous';
+    prevBtn.className = 'px-3 py-1 border rounded-md bg-white text-gray-600 hover:bg-gray-100';
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.onclick = function() {
+        if (currentPage > 1) {
+            currentPage--;
+            renderTablePage(currentPage);
+        }
+    };
+    paginationDiv.appendChild(prevBtn);
+    for (var i = 1; i <= totalPages; i++) {
+        var pageBtn = document.createElement('button');
+        pageBtn.textContent = i;
+        pageBtn.className = 'px-3 py-1 border rounded-md ' + (i === currentPage ? 'bg-blue-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-100');
+        (function(pageNum) {
+            pageBtn.onclick = function() {
+                currentPage = pageNum;
+                renderTablePage(currentPage);
+            };
+        })(i);
+        paginationDiv.appendChild(pageBtn);
+    }
+    var nextBtn = document.createElement('button');
+    nextBtn.textContent = 'Next';
+    nextBtn.className = 'px-3 py-1 border rounded-md bg-white text-gray-600 hover:bg-gray-100';
+    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.onclick = function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderTablePage(currentPage);
+        }
+    };
+    paginationDiv.appendChild(nextBtn);
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.chart-suggestion-card').forEach(function(card) {
+        var chartType = card.querySelector('.chart-title').textContent.toLowerCase().replace(' chart', '').replace(/\s/g, '_');
+        var meta = window.chartTypeMeta[chartType] || {icon: 'bar_chart', color: 'bg-blue-400'};
+        var iconDiv = card.querySelector('.chart-icon');
+        var iconSpan = card.querySelector('.material-icons');
+        iconDiv.className = 'chart-icon ' + meta.color;
+        iconSpan.textContent = meta.icon;
     });
+
+    // Insert a div for pagination controls after the table
+    var table = document.querySelector('table');
+    var paginationDiv = document.createElement('div');
+    paginationDiv.className = 'pagination-controls flex items-center space-x-1 mt-2';
+    table.parentNode.appendChild(paginationDiv);
+
+    // On initial load, set filteredData to initial preview rows
+    filteredData = [];
+    {% if data_preview_rows and data_preview_rows|length > 0 %}
+        filteredData = {{ data_preview_rows|tojson }};
+    {% endif %}
+    renderTablePage(1);
+
     // NLP Chatbot AJAX
     document.getElementById('nlp-form').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -319,79 +370,44 @@
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('nlp-response').innerHTML = data.html;
+            // Show the AI's textual answer if present
+            if (data.nlp_answer) {
+                document.getElementById('nlp-answer').innerHTML = data.nlp_answer;
+            } else {
+                document.getElementById('nlp-answer').innerHTML = '';
+            }
             // Update Data Preview table if filtered data is available
             if (data.filtered_data) {
-                var table = $('#data-table').DataTable();
-                table.clear();
-                table.rows.add(data.filtered_data);
-                table.draw();
+                filteredData = data.filtered_data;
+                currentPage = 1;
+                renderTablePage(currentPage);
             }
-            // Always reload DataTable after filter change
-            var table = $('#data-table').DataTable();
-            table.ajax.reload();
         });
-    });
-    function wordCount(str) {
-      return str.trim().split(/\s+/).length;
-    }
-    function renderReviews(reviews) {
-      const list = document.getElementById('reviews-list');
-      list.innerHTML = '';
-      reviews.forEach(r => {
-        const card = document.createElement('div');
-        card.className = 'review-card';
-        card.innerHTML = `
-          <div class="review-meta">
-            <strong>${r.username}</strong>
-            ${r.position ? `<span>(${r.position})</span>` : ''}
-            <span class="review-date">${r.timestamp}</span>
-          </div>
-          <div class="review-message">${r.review.replace(/</g, '&lt;')}</div>
-        `;
-        list.appendChild(card);
       });
-    }
-    function fetchReviews() {
-      fetch('/reviews')
-        .then(res => res.json())
-        .then(renderReviews);
-    }
-    document.getElementById('review-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const username = document.getElementById('review-username').value.trim();
-      const position = document.getElementById('review-position').value.trim();
-      const review = document.getElementById('review-message').value.trim();
-      const feedback = document.getElementById('review-form-feedback');
-      feedback.textContent = '';
-      let errors = [];
-      if (!username || username.length < 2) errors.push('Username must be at least 2 characters.');
-      if (position.length > 50) errors.push('Position/Role must be 50 characters or less.');
-      const wc = wordCount(review);
-      if (!review || wc < 20 || wc > 200) errors.push('Review must be between 20 and 200 words.');
-      if (errors.length) {
-        feedback.textContent = errors.join(' ');
-        feedback.style.color = 'red';
-        return;
-      }
-      fetch('/reviews', {
+    // Refresh Data Preview button AJAX
+    document.getElementById('refresh-preview').addEventListener('click', function(e) {
+        fetch('/nlp_query/get_filtered_data', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({username, position, review})
+            body: JSON.stringify({temp_id: '{{ temp_path }}'})
       })
-      .then(res => res.json().then(data => ({ok: res.ok, ...data})))
+        .then(response => response.json())
       .then(data => {
-        if (data.success) {
-          feedback.textContent = data.message;
-          feedback.style.color = 'green';
-          this.reset();
-          fetchReviews();
-        } else {
-          feedback.textContent = (data.errors || ['Unknown error']).join(' ');
-          feedback.style.color = 'red';
+            if (data.filtered_data) {
+                filteredData = data.filtered_data;
+                currentPage = 1;
+                renderTablePage(currentPage);
         }
       });
     });
-    fetchReviews();
+
+    // Add search event listener
+    document.getElementById('search').addEventListener('input', function(e) {
+        searchTerm = e.target.value;
+        currentPage = 1;
+        renderTablePage(currentPage);
+    });
+});
 </script>
-{% endblock %}
+</body>
+</html>

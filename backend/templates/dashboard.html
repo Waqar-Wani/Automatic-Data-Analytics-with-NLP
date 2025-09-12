@@ -17,8 +17,8 @@
     {% set chart_type_label = chart_type.capitalize() + ' Chart' %}
     <h3>{{ chart_type_label }} for {{ y_label }} by {{ x_column }}</h3>
     <!-- Plotly Chart with enhanced container -->
-    <div class="chart-container">
-        <div id="chart">{{ graph_html | safe }}</div>
+    <div class="chart-container" style="width:100%;margin:0 auto;">
+        <div id="chart" style="height:260px;">{{ graph_html | safe }}</div>
     </div>
     <a href="javascript:history.back()" class="dashboard-btn">Back to Chart Options</a>
 </div>
