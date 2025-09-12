@@ -1,7 +1,3 @@
-Here's your updated README file with the **live demo link** (`https://adaai.onrender.com/`) added in a natural and prominent way:
-
----
-
 # 🚀 Automatic-Data-Analytics-with-NLP
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python)
